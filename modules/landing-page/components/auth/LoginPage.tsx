@@ -7,6 +7,49 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      alert("Email dan password wajib diisi");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:8000/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.errors) {
+          const errorMessages = Object.values(data.errors).flat().join("\n");
+          alert(errorMessages);
+        } else {
+          alert(data.message || "Login gagal");
+        }
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      window.location.href = "/home";
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan koneksi ke server");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FCFDF8] flex">
@@ -152,8 +195,13 @@ export default function LoginPage() {
             </div>
 
             {/* Submit */}
-            <button className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-base hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-100 mt-2">
-              Masuk <ArrowRight size={18} />
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-base hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-100 mt-2"
+            >
+              {loading ? "Memproses..." : "Masuk"} <ArrowRight size={18} />
             </button>
 
             {/* Divider */}
