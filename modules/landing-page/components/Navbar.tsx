@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import { Leaf, Search } from "lucide-react";
+import { logout } from "@/lib/auth";
 
 export default function Navbar() {
   return (
@@ -35,6 +37,12 @@ export default function Navbar() {
           </a>
           <button className="bg-green-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-slate-900 transition shadow-md shadow-green-100">
             Daftar Lahan
+          </button>
+          <button
+            onClick={logout}
+            className="bg-red-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-slate-900 transition shadow-md shadow-green-100"
+          >
+            Logout
           </button>
         </div>
       </div>

@@ -2,50 +2,61 @@
 import React, { useState } from "react";
 import { Leaf, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import axios from "@/lib/axios";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
     if (!email || !password) {
-      alert("Email dan password wajib diisi");
+      setError("Email dan password wajib diisi");
       return;
     }
 
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:8000/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const { data: response } = await axios.post("/auth/login", {
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.errors) {
-          const errorMessages = Object.values(data.errors).flat().join("\n");
-          alert(errorMessages);
-        } else {
-          alert(data.message || "Login gagal");
-        }
-        return;
-      }
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (response.data.token) {
+        Cookies.set("token", response.data.token, {
+          expires: 5 / (60 * 24),
+          secure: false,
+          sameSite: "Lax",
+        });
+        console.log("Token tersimpan:", Cookies.get("token"));
       }
 
       window.location.href = "/home";
     } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan koneksi ke server");
+      const error = err as {
+        response?: {
+          data?: { message?: string; errors?: Record<string, string[]> };
+        };
+      };
+
+      if (error.response?.data?.errors) {
+        const errorMessages = Object.values(error.response.data.errors)
+          .flat()
+          .join("\n");
+        setError(errorMessages);
+      } else {
+        const message =
+          error.response?.data?.message ||
+          "Terjadi kesalahan koneksi ke server";
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -55,7 +66,6 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#FCFDF8] flex">
       {/* Left Panel - Decorative */}
       <div className="hidden lg:flex w-1/2 bg-green-600 relative overflow-hidden flex-col justify-between p-16">
-        {/* Background Pattern */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-green-500 rounded-full translate-x-1/2 translate-y-1/2 opacity-50" />
@@ -137,8 +147,15 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {/* Error Banner */}
+          {error && (
+            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">
+              {error}
+            </div>
+          )}
+
           {/* Form */}
-          <div className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -165,6 +182,7 @@ export default function LoginPage() {
                 <label className="block text-sm font-semibold text-slate-700">
                   Password
                 </label>
+
                 <a
                   href="#"
                   className="text-xs text-green-600 hover:underline font-medium"
@@ -196,12 +214,39 @@ export default function LoginPage() {
 
             {/* Submit */}
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-base hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-100 mt-2"
+              className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-base hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-100 mt-2 disabled:bg-green-400 disabled:cursor-not-allowed"
             >
-              {loading ? "Memproses..." : "Masuk"} <ArrowRight size={18} />
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    />
+                  </svg>
+                  Memproses...
+                </>
+              ) : (
+                <>
+                  Masuk <ArrowRight size={18} />
+                </>
+              )}
             </button>
 
             {/* Divider */}
@@ -212,7 +257,10 @@ export default function LoginPage() {
             </div>
 
             {/* Google Login */}
-            <button className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-2xl font-semibold text-sm hover:bg-slate-50 transition flex items-center justify-center gap-3 shadow-sm">
+            <button
+              type="button"
+              className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-2xl font-semibold text-sm hover:bg-slate-50 transition flex items-center justify-center gap-3 shadow-sm"
+            >
               <svg width="18" height="18" viewBox="0 0 48 48">
                 <path
                   fill="#FFC107"
@@ -233,7 +281,7 @@ export default function LoginPage() {
               </svg>
               Masuk dengan Google
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

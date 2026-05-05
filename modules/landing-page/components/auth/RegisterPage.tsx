@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import { Leaf, Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import axios from "@/lib/axios";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -17,52 +19,46 @@ export default function RegisterPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError(null); // reset error tiap user mengetik
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
-    // Validasi
-    if (!form.name || !form.email || !form.password) {
-      alert("Semua field wajib diisi");
+    // Validasi client-side
+    if (!form.name || !form.email || !form.password || !form.confirm) {
+      setError("Semua field wajib diisi");
       return;
     }
 
     if (form.password !== form.confirm) {
-      alert("Password tidak sama");
+      setError("Password tidak sama");
+      return;
+    }
+
+    if (form.password.length < 8) {
+      setError("Password minimal 8 karakter");
       return;
     }
 
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:8000/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          confirmPassword: form.confirm,
-        }),
+      await axios.post("/auth/register", {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        confirmPassword: form.confirm,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Register gagal");
-        return;
-      }
-
-      alert("Register berhasil!");
-
-      // redirect ke login
+      // Redirect ke login setelah berhasil
       window.location.href = "/login";
     } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan koneksi ke server");
+      const error = err as { response?: { data?: { message?: string } } };
+      const message =
+        error.response?.data?.message || "Terjadi kesalahan koneksi ke server";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -172,6 +168,7 @@ export default function RegisterPage() {
                   type="text"
                   name="name"
                   value={form.name}
+                  placeholder="masukan nama lengkap"
                   onChange={handleChange}
                   className="w-full pl-10 py-3 border rounded-xl"
                 />
@@ -187,6 +184,7 @@ export default function RegisterPage() {
                   type="email"
                   name="email"
                   value={form.email}
+                  placeholder="masukan @ email"
                   onChange={handleChange}
                   className="w-full pl-10 py-3 border rounded-xl"
                 />
@@ -202,6 +200,7 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={form.password}
+                  placeholder="masukan password"
                   onChange={handleChange}
                   className="w-full pl-10 pr-10 py-3 border rounded-xl"
                 />
@@ -225,6 +224,7 @@ export default function RegisterPage() {
                   name="confirm"
                   value={form.confirm}
                   onChange={handleChange}
+                  placeholder="konfirmasi password"
                   className="w-full pl-10 pr-10 py-3 border rounded-xl"
                 />
                 <button
