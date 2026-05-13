@@ -24,8 +24,11 @@ export const OperationsHeader = ({
   onLandChange,
 }: OperationsHeaderProps) => {
   const { lands, isLoadingLands } = useLands();
-
   const { openEdit, openAddCycle } = useLandContext();
+
+  if (!lands && !isLoadingLands) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-4 border border-slate-100 bg-white p-6 shadow-sm rounded-[32px] md:flex-row md:items-center md:justify-between items-start animate-in fade-in slide-in-from-top-2 duration-500">
@@ -59,8 +62,9 @@ export const OperationsHeader = ({
                 />
               </div>
             </SelectTrigger>
+
             <SelectContent className="rounded-xl border-slate-100 shadow-xl max-h-[300px]">
-              {lands?.length > 0 ? (
+              {lands && lands.length > 0 ? (
                 lands.map((land: any) => (
                   <SelectItem
                     key={land.id}

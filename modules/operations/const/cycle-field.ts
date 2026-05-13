@@ -1,18 +1,22 @@
 import { FormField } from "@/common/types/form-field"; // Sesuaikan path ini dengan project kamu
+import { Commodity } from "../types/commodity";
 
-export const cycleFormFields: FormField[] = [
-  // {
-  //   id: "land_id",
-  //   label: "ID Lahan",
-  //   type: "hidden", // Biasanya tidak perlu ditampilkan, diambil dari konteks halaman
-  //   required: true,
-  // },
+export const getCycleFormFields = (
+  commodities: Commodity[] = [],
+): FormField[] => [
   {
-    id: "commodity_name",
+    id: "commodity_id",
     label: "Nama Komoditas",
-    type: "text",
-    placeholder: "Cth: Padi Sawah, Jagung Manis, Tomat...",
+    type: "select",
+    placeholder: "Pilih Komoditas",
     required: true,
+    options: [
+      { label: "pilih komoditi", value: "" },
+      ...commodities.map((commodity) => ({
+        label: commodity.name,
+        value: commodity.id,
+      })),
+    ],
   },
   {
     id: "variety",

@@ -20,11 +20,15 @@ import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { Button } from "@/components/ui/button";
 
 import { getLandFormFields } from "../../const/land-filed";
-import { cycleFormFields } from "../../const/cycle-field";
+import { getCycleFormFields } from "../../const/cycle-field";
 import { activityFormFields } from "../../const/activity-field";
+import { useCommodities } from "../../hooks/commodity-hook";
 
 export const OperationsPage = () => {
-  const { lands, isLoadingLands } = useLands();
+  const [selectedLandId, setSelectedLandId] = useState<string>("");
+
+  const { lands, isLoadingLands, landDetail, isLoadingDetail } =
+    useLands(selectedLandId);
 
   const {
     isOpen,
@@ -44,8 +48,9 @@ export const OperationsPage = () => {
     openAddActivity,
   } = useLandContext();
 
-  const [selectedLandId, setSelectedLandId] = useState<string>("");
   const [selectedCycle, setSelectedCycle] = useState<any | null>(null);
+  const { commodities } = useCommodities();
+  const cycleFormFields = getCycleFormFields(commodities);
 
   useEffect(() => {
     if (lands && lands.length > 0 && !selectedLandId) {
@@ -54,8 +59,8 @@ export const OperationsPage = () => {
   }, [lands, selectedLandId]);
 
   const activeLand = useMemo(() => {
-    return lands?.find((land: any) => land.id === selectedLandId);
-  }, [selectedLandId, lands]);
+    return landDetail;
+  }, [landDetail]);
 
   const filteredCycles = useMemo(() => {
     return activeLand?.planting_cycles || [];
@@ -83,13 +88,69 @@ export const OperationsPage = () => {
       <OperationsHeader
         selectedLandId={selectedLandId}
         onLandChange={setSelectedLandId}
-        onAddCycle={() => openAddCycle(selectedLandId)}
       />
 
-      {activeLand ? (
-        <div className="animate-in slide-in-from-top-4 duration-500">
-          <LandInfoCard land={activeLand} />
+      {isLoadingDetail ? (
+        <div className="flex flex-col h-64 items-center justify-center gap-3 text-slate-400 font-medium text-sm">
+          <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+          Memuat detail lahan & siklus...
         </div>
+      ) : activeLand ? (
+        <>
+          <div className="animate-in slide-in-from-top-4 duration-500">
+            <LandInfoCard land={activeLand} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <aside className="lg:col-span-4">
+              <CycleListSidebar
+                selectedLandId={selectedLandId}
+                selectedCycle={selectedCycle}
+                onSelect={setSelectedCycle}
+              />
+            </aside>
+
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              {selectedCycle ? (
+                <div className="flex flex-col gap-6 animate-in zoom-in-95 duration-500">
+                  <SpotlightCard
+                    className="p-1 rounded-[32px] border border-slate-100 bg-white shadow-sm"
+                    spotlightColor="rgba(22, 163, 74, 0.05)"
+                  >
+                    <CycleOverviewCard cycle={selectedCycle} />
+                  </SpotlightCard>
+
+                  <ActivityTimeline
+                    activities={selectedCycle.daily_activities}
+                    onAddActivity={() => openAddActivity(selectedCycle.id)}
+                  />
+                </div>
+              ) : (
+                <SpotlightCard className="rounded-[40px] border border-dashed border-slate-200 bg-white/50">
+                  <div className="p-16 flex flex-col items-center justify-center text-center">
+                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner animate-pulse">
+                      <Map size={40} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-800">
+                      Belum Ada Siklus Tanam
+                    </h3>
+                    <p className="text-sm text-slate-400 mt-2 max-w-sm leading-relaxed font-medium">
+                      Lahan "{activeLand.name}" belum memiliki siklus tanam
+                      aktif.
+                    </p>
+                    <Button
+                      onClick={() => openAddCycle(selectedLandId)}
+                      className="mt-8 rounded-2xl bg-slate-950 px-8 h-12 font-bold hover:bg-green-600 transition-all shadow-lg active:scale-95"
+                    >
+                      <PlusCircle className="mr-2 h-5 w-5" /> Mulai Tanam
+                      Sekarang
+                    </Button>
+                  </div>
+                </SpotlightCard>
+              )}
+            </div>
+          </div>
+        </>
       ) : (
         <div className="p-12 border-2 border-dashed border-slate-100 rounded-[40px] bg-white/50 text-center flex flex-col items-center gap-4">
           <Map className="text-slate-200" size={48} />
@@ -99,65 +160,6 @@ export const OperationsPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <aside className="lg:col-span-4">
-          <CycleListSidebar
-            selectedLandId={selectedLandId}
-            selectedCycle={selectedCycle}
-            onSelect={setSelectedCycle}
-          />
-        </aside>
-
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          {selectedCycle ? (
-            <div className="flex flex-col gap-6 animate-in zoom-in-95 duration-500">
-              <SpotlightCard
-                className="p-1 rounded-[32px] border border-slate-100 bg-white shadow-sm"
-                spotlightColor="rgba(22, 163, 74, 0.05)"
-              >
-                <CycleOverviewCard
-                  cycle={selectedCycle}
-                  className="border-none shadow-none bg-transparent"
-                />
-              </SpotlightCard>
-
-              {/* TIMELINE: Tambahkan pemicu modal aktivitas */}
-              <ActivityTimeline
-                activities={selectedCycle.daily_activities}
-                onAddActivity={() => openAddActivity(selectedCycle.id)}
-              />
-            </div>
-          ) : (
-            <SpotlightCard className="rounded-[40px] border border-dashed border-slate-200 bg-white/50">
-              <div className="p-16 flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner animate-pulse">
-                  <Map size={40} />
-                </div>
-                <h3 className="text-xl font-black text-slate-800">
-                  Belum Ada Siklus Tanam
-                </h3>
-                <p className="text-sm text-slate-400 mt-2 max-w-sm leading-relaxed font-medium">
-                  {activeLand
-                    ? `Lahan "${activeLand.name}" belum memiliki siklus tanam aktif.`
-                    : "Pilih lahan Anda untuk memantau perkembangan operasional."}
-                </p>
-                {activeLand && (
-                  <Button
-                    onClick={() => openAddCycle(selectedLandId)}
-                    className="mt-8 rounded-2xl bg-slate-950 px-8 h-12 font-bold hover:bg-green-600 transition-all shadow-lg"
-                  >
-                    <PlusCircle className="mr-2 h-5 w-5" /> Mulai Tanam Sekarang
-                  </Button>
-                )}
-              </div>
-            </SpotlightCard>
-          )}
-        </div>
-      </div>
-
-      {/* --- MODALS SECTION --- */}
-
-      {/* 1. Modal Lahan */}
       <DynamicFormDialog
         isOpen={isOpen}
         onClose={closeForm}
@@ -174,7 +176,6 @@ export const OperationsPage = () => {
         />
       </DynamicFormDialog>
 
-      {/* 2. Modal Siklus */}
       <DynamicFormDialog
         isOpen={isOpenCycle}
         onClose={closeCycleForm}
@@ -190,7 +191,6 @@ export const OperationsPage = () => {
         />
       </DynamicFormDialog>
 
-      {/* 3. Modal Aktivitas Harian */}
       <DynamicFormDialog
         isOpen={isOpenActivity}
         onClose={closeActivityForm}

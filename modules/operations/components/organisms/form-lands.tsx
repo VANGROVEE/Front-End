@@ -11,19 +11,28 @@ import {
   Search,
   LocateFixed,
   Loader2,
+  ChevronsUpDown,
+  Check,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/common/types/form-field";
 import { Land } from "../../types/lands";
@@ -64,17 +73,25 @@ const getDefaultValues = (data?: Land | null): FarmerLandFormDataFlat => ({
 
 const getIconForField = (type: string, fieldId: string) => {
   if (type === "select") return null;
+
   const props = {
     size: 18,
+
     className:
-      "absolute left-4 top-3.5 text-slate-400 z-10 transition-colors group-focus-within:text-green-600",
+      "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10 transition-colors group-focus-within:text-green-600",
   };
 
   if (fieldId.includes("area")) return <Maximize {...props} />;
   if (fieldId.includes("latitude") || fieldId.includes("longitude"))
     return <Map {...props} />;
+
   if (fieldId.includes("address"))
-    return <MapPin {...props} className="top-4" />;
+    return (
+      <MapPin
+        size={18}
+        className="absolute left-4 top-4 text-slate-400 z-10 transition-colors group-focus-within:text-green-600"
+      />
+    );
   if (fieldId.includes("certificate")) return <FileText {...props} />;
   return null;
 };
@@ -121,7 +138,7 @@ export const FormFarmerLands = ({
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+        `https:
           searchQuery,
         )}&limit=1`,
       );
@@ -196,7 +213,7 @@ export const FormFarmerLands = ({
           const isCoordinate =
             field.id === "latitude" || field.id === "longitude";
           const icon = getIconForField(field.type, field.id);
-          const paddingClass = icon ? "pl-11" : "pl-4";
+          const paddingClass = icon ? "pl-11" : "px-4";
 
           return (
             <Controller
@@ -244,7 +261,7 @@ export const FormFarmerLands = ({
                         disabled={isSubmitting}
                         placeholder={field.placeholder}
                         className={cn(
-                          "flex min-h-[120px] w-full resize-y rounded-2xl border bg-slate-50 px-4 py-3 text-sm font-medium transition-all duration-200",
+                          "flex min-h-[120px] w-full resize-y rounded-xl border bg-slate-50 py-3 text-sm font-medium transition-all duration-200",
                           "focus:ring-4 focus:outline-none disabled:bg-slate-100 disabled:opacity-70 focus:bg-white",
                           paddingClass,
                           error
@@ -253,39 +270,69 @@ export const FormFarmerLands = ({
                         )}
                       />
                     ) : field.type === "select" ? (
-                      <Select
-                        onValueChange={onChange}
-                        value={value?.toString() || ""}
-                        disabled={isSubmitting}
-                      >
-                        <SelectTrigger
-                          id={field.id}
-                          className={cn(
-                            "h-12 w-full rounded-2xl border-slate-200 bg-slate-50 font-medium px-4 text-sm transition-all focus:ring-4 focus:ring-green-500/10 focus:bg-white",
-                            error && "border-red-500 focus:ring-red-500/10",
-                          )}
-                        >
-                          <SelectValue
-                            placeholder={
-                              field.placeholder || `Pilih ${field.label}`
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                          {field.options?.map((opt) => {
-                            if (opt.value === "") return null;
-                            return (
-                              <SelectItem
-                                key={opt.value}
-                                value={opt.value.toString()}
-                                className="cursor-pointer rounded-lg font-medium focus:bg-green-50 focus:text-green-700"
-                              >
-                                {opt.label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id={field.id}
+                            variant="outline"
+                            role="combobox"
+                            disabled={isSubmitting}
+                            className={cn(
+                              "h-12 w-full justify-between rounded-xl border-slate-200 bg-white text-sm font-normal transition-all hover:bg-white hover:text-slate-900 focus:ring-4 focus:ring-indigo-500/10",
+                              paddingClass,
+                              error && "border-red-500 focus:ring-red-500/10",
+                              !value && "text-muted-foreground",
+                            )}
+                          >
+                            {value
+                              ? field.options?.find(
+                                  (opt) =>
+                                    opt.value.toString() === value?.toString(),
+                                )?.label
+                              : field.placeholder || `Pilih ${field.label}`}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] rounded-xl border-slate-200 p-0 shadow-xl">
+                          <Command>
+                            <CommandInput
+                              placeholder={`Cari ${field.label}...`}
+                              className="h-11"
+                            />
+                            <CommandList>
+                              <CommandEmpty>
+                                Tidak ada data ditemukan.
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {field.options?.map((opt) => {
+                                  if (opt.value === "") return null;
+                                  return (
+                                    <CommandItem
+                                      key={opt.value}
+                                      value={opt.label}
+                                      onSelect={() => {
+                                        onChange(opt.value.toString());
+                                      }}
+                                      className="cursor-pointer rounded-lg aria-selected:bg-indigo-50 aria-selected:text-indigo-600"
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          value === opt.value.toString()
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {opt.label}
+                                    </CommandItem>
+                                  );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     ) : (
                       <Input
                         id={field.id}
@@ -302,12 +349,12 @@ export const FormFarmerLands = ({
                         }
                         step={field.type === "number" ? "any" : undefined}
                         className={cn(
-                          "h-12 rounded-2xl border-slate-200 bg-slate-50 font-medium transition-all focus-visible:bg-white focus-visible:border-green-500 focus-visible:ring-4 focus-visible:ring-green-500/10",
+                          "h-12 w-full rounded-xl border-slate-200 bg-slate-50 pr-4 font-medium transition-all focus-visible:bg-white focus-visible:border-green-500 focus-visible:ring-4 focus-visible:ring-green-500/10",
                           paddingClass,
                           isCoordinate &&
-                            "cursor-not-allowed bg-slate-100 text-slate-500 font-mono",
+                            "cursor-not-allowed bg-slate-100 text-slate-500 font-mono focus-visible:ring-0 focus-visible:border-slate-200",
                           error &&
-                            "border-red-500 focus-visible:ring-red-500/10",
+                            "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500/10",
                         )}
                       />
                     )}
@@ -323,10 +370,10 @@ export const FormFarmerLands = ({
           );
         })}
 
-        <div className="mt-4 space-y-4 md:col-span-2 bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
+        <div className="mt-4 space-y-4 md:col-span-2 bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">
           <div className="flex flex-col gap-1 mb-2">
             <Label className="text-sm font-black tracking-widest text-slate-800 uppercase flex items-center gap-2">
-              <MapPin size={18} className="text-green-500" />
+              <MapPin size={18} className="text-green-600" />
               Titik Koordinat Lahan
             </Label>
             <p className="text-xs text-slate-500 font-medium">
@@ -338,7 +385,7 @@ export const FormFarmerLands = ({
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search
-                className="absolute left-4 top-3 text-slate-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 focus-within:text-green-600"
                 size={18}
               />
               <Input
@@ -351,7 +398,7 @@ export const FormFarmerLands = ({
                   }
                 }}
                 placeholder="Cari Kota, Kecamatan, atau Desa..."
-                className="h-12 pl-11 rounded-2xl border-slate-200 bg-slate-50 focus-visible:bg-white focus-visible:ring-green-500/10 focus-visible:border-green-500"
+                className="h-12 w-full pl-11 rounded-xl border-slate-200 bg-slate-50 focus-visible:bg-white focus-visible:ring-green-500/10 focus-visible:border-green-500"
               />
             </div>
 
@@ -360,7 +407,7 @@ export const FormFarmerLands = ({
                 type="button"
                 onClick={handleSearchLocation}
                 disabled={isSearching || !searchQuery.trim()}
-                className="h-12 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-bold px-6 shadow-lg shadow-green-200"
+                className="h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold px-6 shadow-lg shadow-green-200 transition-all active:scale-95"
               >
                 {isSearching ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -374,7 +421,7 @@ export const FormFarmerLands = ({
                 variant="outline"
                 onClick={handleCurrentLocation}
                 title="Gunakan Lokasi Saat Ini (GPS)"
-                className="h-12 w-12 rounded-2xl border-slate-200 text-slate-600 hover:text-green-600 hover:bg-green-50 hover:border-green-200 transition-colors p-0"
+                className="h-12 w-12 rounded-xl border-slate-200 text-slate-600 hover:text-green-600 hover:bg-green-50 hover:border-green-200 transition-colors p-0 flex items-center justify-center"
               >
                 <LocateFixed size={20} />
               </Button>
@@ -382,12 +429,12 @@ export const FormFarmerLands = ({
           </div>
 
           {searchError && (
-            <p className="text-xs font-bold text-red-500 px-1 bg-red-50 py-2 rounded-lg border border-red-100 flex items-center">
+            <p className="text-xs font-bold text-red-500 px-3 bg-red-50 py-2 rounded-lg border border-red-100 flex items-center mt-2">
               <span className="mr-2">⚠️</span> {searchError}
             </p>
           )}
 
-          <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-inner mt-2 h-[350px] relative z-0">
+          <div className="rounded-xl overflow-hidden border border-slate-200 shadow-inner mt-4 h-[350px] relative z-0">
             <MapPickerDynamic
               lat={currentLat}
               lng={currentLng}

@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios/api";
 import { CreateLandDto, UpdateLandDto } from "../schema/land-schema";
-import { Land } from "../types/lands";
+import { Land, LandDetail } from "../types/lands";
 
 const prefix = "/land";
 
@@ -10,7 +10,7 @@ export const landApi = {
     return response.data.data;
   },
 
-  findById: async (id: string): Promise<Land> => {
+  findById: async (id: string): Promise<LandDetail> => {
     const response = await api.get(`${prefix}/${id}`);
     return response.data.data;
   },

@@ -9,7 +9,7 @@ export interface FormField {
     | "textarea"
     | "select"
     | "date"
-    | "checkbox";
+    | "switch";
   placeholder?: string;
   required?: boolean;
   options?: FieldOption[];

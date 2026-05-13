@@ -1,4 +1,6 @@
-export const getLandFormFields = [
+import { FormField } from "@/common/types/form-field";
+
+export const getLandFormFields: FormField[] = [
   {
     id: "name",
     label: "Nama Lahan",
@@ -35,11 +37,4 @@ export const getLandFormFields = [
     placeholder: "Contoh: 103.6167",
     required: false,
   },
-  // {
-  //   id: "land_certificate_url",
-  //   label: "URL Dokumen Sertifikat",
-  //   type: "text",
-  //   placeholder: "https://... (Opsional)",
-  //   required: false,
-  // },
 ];
