@@ -10,7 +10,7 @@ export const features: Feature[] = [
   {
     icon: Award,
     title: "Kualitas Premium",
-    desc: "Validasi Gemini AI 95% Akurat.",
+    desc: "Validasi AI 95% Akurat.",
   },
   {
     icon: Sprout,

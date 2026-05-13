@@ -5,7 +5,9 @@ import FeaturesSection from "./FeaturesSection";
 import AISpotlightSection from "./AISpotlightSection";
 import LandMapSection from "./LandMapSection";
 import NewsletterSection from "./NewsletterSection";
-import Footer from "./Footer";
+import Footer from "./footer";
+import HowItWorks from "./HowItWorks";
+// import Footer from "./Footer";
 
 export const LandingPage = () => {
   return (
@@ -15,6 +17,7 @@ export const LandingPage = () => {
       <FeaturesSection />
       <AISpotlightSection />
       <LandMapSection />
+      <HowItWorks />
       <NewsletterSection />
       <Footer />
     </div>

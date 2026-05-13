@@ -5,7 +5,7 @@ import DiseaseCard from "./DiseaseCard";
 
 export default function AISpotlightSection() {
   return (
-    <section id="ai-center" className="py-24 px-6 bg-slate-50/30">
+    <section id="ai-center" className=" px-6 bg-slate-50/30">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-12">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-950">
