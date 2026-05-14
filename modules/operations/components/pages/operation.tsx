@@ -23,6 +23,10 @@ import { getLandFormFields } from "../../const/land-filed";
 import { getCycleFormFields } from "../../const/cycle-field";
 import { activityFormFields } from "../../const/activity-field";
 import { useCommodities } from "../../hooks/commodity-hook";
+import { HealthHistoryCard } from "../molecules/HealthHistoryCard";
+import { FormHealthCheck } from "../organisms/formHealth";
+import { healthFormFields } from "../../const/health-field";
+import { useCycles } from "../../hooks/cycle-hooks";
 
 export const OperationsPage = () => {
   const [selectedLandId, setSelectedLandId] = useState<string>("");
@@ -46,6 +50,11 @@ export const OperationsPage = () => {
     handleActivitySubmit,
     isSubmittingActivity,
     openAddActivity,
+    isOpenHealthCheck,
+    closeHealthCheckForm,
+    openAddHealthCheck,
+    handleHealthSubmit,
+    isSubmittingHealth,
   } = useLandContext();
 
   const [selectedCycle, setSelectedCycle] = useState<any | null>(null);
@@ -102,32 +111,20 @@ export const OperationsPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <aside className="lg:col-span-4">
+            <aside className="lg:col-span-4 h-full">
               <CycleListSidebar
-                selectedLandId={selectedLandId}
+                cycles={filteredCycles} // <--- Tambahkan Baris Ini
                 selectedCycle={selectedCycle}
                 onSelect={setSelectedCycle}
               />
             </aside>
 
-            <div className="lg:col-span-8 flex flex-col gap-6">
+            <div className="lg:col-span-8 h-full">
               {selectedCycle ? (
-                <div className="flex flex-col gap-6 animate-in zoom-in-95 duration-500">
-                  <SpotlightCard
-                    className="p-1 rounded-[32px] border border-slate-100 bg-white shadow-sm"
-                    spotlightColor="rgba(22, 163, 74, 0.05)"
-                  >
-                    <CycleOverviewCard cycle={selectedCycle} />
-                  </SpotlightCard>
-
-                  <ActivityTimeline
-                    activities={selectedCycle.daily_activities}
-                    onAddActivity={() => openAddActivity(selectedCycle.id)}
-                  />
-                </div>
+                <CycleOverviewCard cycle={selectedCycle} />
               ) : (
-                <SpotlightCard className="rounded-[40px] border border-dashed border-slate-200 bg-white/50">
-                  <div className="p-16 flex flex-col items-center justify-center text-center">
+                <SpotlightCard className="rounded-[40px] border border-dashed border-slate-200 bg-white/50 h-full flex flex-col items-center justify-center min-h-[300px]">
+                  <div className="p-10 flex flex-col items-center justify-center text-center">
                     <div className="w-20 h-20 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center mb-6 shadow-inner animate-pulse">
                       <Map size={40} />
                     </div>
@@ -150,6 +147,21 @@ export const OperationsPage = () => {
               )}
             </div>
           </div>
+
+          {selectedCycle && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in slide-in-from-bottom-4 duration-700">
+              <ActivityTimeline
+                activities={selectedCycle.daily_activities}
+                onAddActivity={() => openAddActivity(selectedCycle.id)}
+              />
+
+              <HealthHistoryCard
+                reports={selectedCycle.health_reports || []}
+                isAiSupported={selectedCycle.commodity?.is_ai_supported}
+                onAddReport={() => openAddHealthCheck(selectedCycle.id)}
+              />
+            </div>
+          )}
         </>
       ) : (
         <div className="p-12 border-2 border-dashed border-slate-100 rounded-[40px] bg-white/50 text-center flex flex-col items-center gap-4">
@@ -159,6 +171,23 @@ export const OperationsPage = () => {
           </p>
         </div>
       )}
+
+      {/* DIALOG FORMS */}
+      <DynamicFormDialog
+        isOpen={isOpenHealthCheck}
+        onClose={closeHealthCheckForm}
+        title="Analisis Kesehatan AI"
+        description="Unggah foto tanaman Anda untuk dianalisis oleh AI Vangrove."
+        formId="form-health-check"
+        isLoading={false}
+      >
+        <FormHealthCheck
+          id="form-health-check"
+          fields={healthFormFields}
+          onSubmit={handleHealthSubmit}
+          isSubmitting={isSubmittingHealth}
+        />
+      </DynamicFormDialog>
 
       <DynamicFormDialog
         isOpen={isOpen}
