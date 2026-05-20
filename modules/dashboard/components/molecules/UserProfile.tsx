@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  Bell,
-  LogOut,
-  ChevronDown,
-  Mail,
-  Phone,
-  MapPin,
-  Pencil,
-  User,
-} from "lucide-react";
+import { LogOut, ChevronDown, Mail, Phone, MapPin, User } from "lucide-react";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
 import { useProfile } from "@/common/hooks/use-profile";
 import { EditProfileForm } from "@/modules/auth/components/organisms/editProfilForm";
+import { NotificationDropdown } from "@/modules/dashboard/components/molecules/NotificationDropdown";
 import { createClient } from "@/lib/supabase/client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -47,16 +39,15 @@ export const UserProfile = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ pindah ke halaman profile
   const handleGoToProfile = () => {
     setOpen(false);
     router.push("/dashboard/profile");
   };
 
-  // ✅ logout
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    localStorage.removeItem("vangrove-profile-cache");
     logout();
     router.push("/");
   };
@@ -64,11 +55,8 @@ export const UserProfile = () => {
   return (
     <>
       <div className="flex items-center gap-4">
-        {/* Bell */}
-        <button className="relative p-2 text-slate-400 hover:text-green-600 transition-colors">
-          <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-        </button>
+        {/* ✅ Notification Bell */}
+        <NotificationDropdown />
 
         {/* Profile Trigger */}
         <div className="relative" ref={dropdownRef}>
@@ -134,13 +122,11 @@ export const UserProfile = () => {
                   <p className="text-sm font-black text-slate-800">
                     {profile?.name ?? "-"}
                   </p>
-
                   {profile?.nickname ? (
                     <p className="text-[11px] text-slate-500">
                       @{profile.nickname}
                     </p>
                   ) : null}
-
                   <span className="text-[10px] text-white bg-green-500 rounded-full px-3 py-0.5 mt-1 inline-block font-semibold capitalize">
                     {(profile?.role ?? "user").toLowerCase()}
                   </span>
@@ -153,21 +139,18 @@ export const UserProfile = () => {
                   <User size={13} className="text-green-500" />
                   <span className="text-xs">{profile?.name || "-"}</span>
                 </div>
-
                 <div className="flex items-center gap-2.5 text-slate-500">
                   <Mail size={13} className="text-green-500" />
                   <span className="text-xs">
                     {profile?.email || user?.email || "-"}
                   </span>
                 </div>
-
                 <div className="flex items-center gap-2.5 text-slate-500">
                   <Phone size={13} className="text-green-500" />
                   <span className="text-xs">
                     {profile?.phone_number || "-"}
                   </span>
                 </div>
-
                 <div className="flex items-center gap-2.5 text-slate-500">
                   <MapPin size={13} className="text-green-500" />
                   <span className="text-xs">
@@ -178,7 +161,6 @@ export const UserProfile = () => {
 
               {/* Actions */}
               <div className="px-3 py-2 space-y-1">
-                {/* ✅ Lihat Profile */}
                 <button
                   onClick={handleGoToProfile}
                   className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors text-sm font-semibold"
@@ -186,8 +168,6 @@ export const UserProfile = () => {
                   <User size={15} />
                   Lihat Profile
                 </button>
-
-                {/* Logout */}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 transition-colors text-sm font-semibold"

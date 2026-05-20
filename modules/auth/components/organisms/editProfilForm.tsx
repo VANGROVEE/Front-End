@@ -21,7 +21,12 @@ import { Loader2 } from "lucide-react";
 const profileSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   nickname: z.string().optional(),
-  phone_number: z.string().optional(),
+  phone_number: z
+    .string()
+    .min(10, "Nomor HP minimal 10 digit")
+    .regex(/^[0-9+]+$/, "Hanya boleh angka dan +")
+    .optional()
+    .or(z.literal("")),
   bio: z.string().optional(),
   address_home: z.string().optional(),
   avatar_url: z.string().url("URL tidak valid").optional().or(z.literal("")),
@@ -67,8 +72,11 @@ export const EditProfileForm = ({
   }, [profile, reset]);
 
   const onSubmit = async (data: ProfileFormValues) => {
+    console.log("FORM SUBMIT DATA:", data);
     const success = await onUpdate(data);
-    if (success) onClose();
+    if (success) {
+      onClose(); // ← pastikan ini ada
+    }
   };
 
   return (
@@ -127,6 +135,11 @@ export const EditProfileForm = ({
               placeholder="Contoh: 08123456789"
               className="rounded-xl"
             />
+            {errors.phone_number && (
+              <p className="text-xs text-red-500">
+                {errors.phone_number.message}
+              </p>
+            )}
           </div>
 
           {/* Alamat */}

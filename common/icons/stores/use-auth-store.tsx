@@ -1,7 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
 interface AuthUser {
   id: string;
   email: string;
