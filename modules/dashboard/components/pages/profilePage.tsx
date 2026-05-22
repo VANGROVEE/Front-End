@@ -158,9 +158,10 @@ export const ProfilePage = () => {
       </div>
 
       {/* Edit Profile Dialog */}
+      {/* Edit Profile Dialog */}
       <EditProfileForm
         open={editOpen}
-        onClose={() => setEditOpen(false)}
+        onClose={() => setEditOpen(false)} // ← pastikan ini
         profile={profile}
         onUpdate={handleUpdate}
         updating={updating}
