@@ -120,7 +120,7 @@ export const CycleListSidebar: React.FC<CycleListSidebarProps> = ({
                               isSelected ? "text-green-900" : "text-slate-800",
                             )}
                           >
-                            {cycle.commodity_name || "Komoditas"}
+                            {cycle.commodity.name || "Komoditas"}
                           </span>
 
                           {cycle.variety && (

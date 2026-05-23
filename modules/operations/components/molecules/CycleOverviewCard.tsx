@@ -96,7 +96,7 @@ export const CycleOverviewCard = ({ cycle }: { cycle: PlantingCycle }) => {
               </div>
               <div>
                 <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                  {cycle.commodity_name || "Komoditas"}
+                  {cycle.commodity.name || "Komoditas"}
                   {isHarvested && (
                     <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-md uppercase tracking-widest font-bold">
                       Panen

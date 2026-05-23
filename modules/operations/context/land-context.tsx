@@ -7,6 +7,13 @@ import { useDaily } from "../hooks/daily-hooks";
 import { useHealth } from "../hooks/health-hooks";
 import { LandFormData } from "../schema/land-schema";
 import { Land } from "../types/lands";
+import { toast } from "sonner";
+
+import { generateReactHelpers } from "@uploadthing/react";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
+import { useQueryClient } from "@tanstack/react-query";
+
+const { uploadFiles } = generateReactHelpers<OurFileRouter>();
 
 interface LandContextType {
   isOpen: boolean;
@@ -50,6 +57,7 @@ export const LandFormProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const queryClient = useQueryClient();
   const [selectedLandId, setSelectedLandId] = useState<string | null>(null);
   const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
 
@@ -67,8 +75,9 @@ export const LandFormProvider = ({
     handleCreate: handleCreateActivity,
     isSubmitting: isSubmittingActivity,
   } = useDaily();
+
   const { handleCreate: handleCreateHealth, isSubmitting: isSubmittingHealth } =
-    useHealth();
+    useHealth(selectedCycleId || undefined);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
@@ -144,9 +153,64 @@ export const LandFormProvider = ({
     setTimeout(() => setSelectedCycleId(null), 300);
   };
 
-  const handleHealthSubmit = async (values: any) => {
-    await handleCreateHealth({ ...values, cycle_id: selectedCycleId });
-    closeHealthCheckForm();
+  const handleHealthSubmit = async (formValues: any) => {
+    console.log(formValues);
+
+    if (!formValues.imageFile) {
+      toast.error("Gagal memproses", {
+        description: "Silakan ambil gambar atau pilih file terlebih dahulu.",
+      });
+      return;
+    }
+
+    if (!selectedCycleId) {
+      toast.error("Gagal memproses", {
+        description: "ID Siklus tanam tidak valid atau kedaluwarsa.",
+      });
+      return;
+    }
+
+    const toastId = toast.loading("Memulai proses analisis terintegrasi...");
+
+    try {
+      toast.loading("1/2: Mengunggah gambar biner ke cloud...", {
+        id: toastId,
+      });
+      const uploadResult = await uploadFiles("healthReportImage", {
+        files: [formValues.imageFile],
+      });
+
+      const firstFile = uploadResult?.[0];
+      if (!firstFile?.url) {
+        throw new Error("Gagal mengalokasikan penyimpanan untuk gambar.");
+      }
+
+      toast.loading("2/2: AI Vangrove sedang mendeteksi patogen daun...", {
+        id: toastId,
+      });
+
+      const resReport = await handleCreateHealth({
+        cycle_id: selectedCycleId,
+        image_url: firstFile.url,
+        image_key: firstFile.key,
+        notes: formValues.notes || "",
+      });
+
+      toast.dismiss(toastId);
+      // closeHealthCheckForm();
+
+      queryClient.invalidateQueries({
+        queryKey: ["health-reports", selectedCycleId],
+      });
+      return resReport;
+    } catch (error: any) {
+      toast.dismiss(toastId);
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Gagal memproses diagnosis.";
+      toast.error("Analisis Batal", { description: errorMsg });
+    }
   };
 
   const openDelete = (land: Land) => {
