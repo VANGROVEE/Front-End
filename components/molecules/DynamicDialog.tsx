@@ -42,7 +42,7 @@ export function DynamicFormDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="max-w-3xl overflow-hidden border-none bg-white p-0 shadow-2xl rounded-[32px]" // Sudut membulat khas Vangrove
+        className="max-w-3xl overflow-hidden border-none bg-white p-0 shadow-2xl rounded-[32px]"
       >
         <DialogHeader className="m-0 flex flex-row items-center justify-between space-y-0 border-b border-slate-100 bg-white px-8 py-6">
           <div className="flex-1 space-y-1.5 pr-4 text-left">
@@ -85,7 +85,6 @@ export function DynamicFormDialog({
             type="submit"
             form={formId}
             disabled={isLoading}
-            // Menggunakan warna hijau khas Vangrove
             className="h-12 w-full rounded-2xl bg-green-600 px-8 text-white font-bold shadow-lg shadow-green-200 transition-all hover:bg-green-700 active:scale-[0.98] sm:w-auto"
           >
             {isLoading ? (

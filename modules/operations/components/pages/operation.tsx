@@ -26,10 +26,10 @@ import { useCommodities } from "../../hooks/commodity-hook";
 import { HealthHistoryCard } from "../molecules/HealthHistoryCard";
 import { FormHealthCheck } from "../organisms/formHealth";
 import { healthFormFields } from "../../const/health-field";
-import { useCycles } from "../../hooks/cycle-hooks";
 
 export const OperationsPage = () => {
   const [selectedLandId, setSelectedLandId] = useState<string>("");
+  const [selectedCycle, setSelectedCycle] = useState<any | null>(null);
 
   const { lands, isLoadingLands, landDetail, isLoadingDetail } =
     useLands(selectedLandId);
@@ -57,7 +57,6 @@ export const OperationsPage = () => {
     isSubmittingHealth,
   } = useLandContext();
 
-  const [selectedCycle, setSelectedCycle] = useState<any | null>(null);
   const { commodities } = useCommodities();
   const cycleFormFields = getCycleFormFields(commodities);
 
@@ -113,7 +112,7 @@ export const OperationsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <aside className="lg:col-span-4 h-full">
               <CycleListSidebar
-                cycles={filteredCycles} // <--- Tambahkan Baris Ini
+                cycles={filteredCycles}
                 selectedCycle={selectedCycle}
                 onSelect={setSelectedCycle}
               />
@@ -156,7 +155,7 @@ export const OperationsPage = () => {
               />
 
               <HealthHistoryCard
-                reports={selectedCycle.health_reports || []}
+                cycleId={selectedCycle.id}
                 isAiSupported={selectedCycle.commodity?.is_ai_supported}
                 onAddReport={() => openAddHealthCheck(selectedCycle.id)}
               />
@@ -179,7 +178,8 @@ export const OperationsPage = () => {
         title="Analisis Kesehatan AI"
         description="Unggah foto tanaman Anda untuk dianalisis oleh AI Vangrove."
         formId="form-health-check"
-        isLoading={false}
+        /* PERBAIKAN LENGKAP: Sambungkan variabel state penyerahan data ke dialog */
+        isLoading={isSubmittingHealth}
       >
         <FormHealthCheck
           id="form-health-check"
