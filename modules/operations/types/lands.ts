@@ -16,16 +16,13 @@ export interface User {
   created_at: Date | string;
   lands?: Land[];
   email: string;
-
-  //   notifications Notification[]
 }
-
 
 export interface Land {
   id: string;
   owner_id: string;
   name: string;
-  total_area: Number;
+  total_area: number;
   location?: {
     latitude: string;
     longitude: string;

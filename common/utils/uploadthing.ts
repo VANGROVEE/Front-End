@@ -2,7 +2,7 @@ import { OurFileRouter } from "@/app/api/uploadthing/core";
 import {
   generateUploadButton,
   generateUploadDropzone,
-  generateReactHelpers, // <-- Tambahkan import ini
+  generateReactHelpers,
 } from "@uploadthing/react";
 
 export const UploadButton = generateUploadButton<OurFileRouter>();

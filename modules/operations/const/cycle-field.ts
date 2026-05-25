@@ -1,4 +1,4 @@
-import { FormField } from "@/common/types/form-field"; // Sesuaikan path ini dengan project kamu
+import { FormField } from "@/common/types/form-field";
 import { Commodity } from "../types/commodity";
 
 export const getCycleFormFields = (
@@ -53,7 +53,8 @@ export const getCycleFormFields = (
     placeholder: "Pilih Status",
     required: true,
     options: [
-      { label: "Sedang Berjalan", value: "HARVESTED" },
+      { label: "Sedang Berjalan", value: "PLANTING" },
+      { label: "Panen", value: "HARVESTED" },
       { label: "Selesai / Panen", value: "COMPLETED" },
       { label: "Gagal", value: "FAILED" },
     ],

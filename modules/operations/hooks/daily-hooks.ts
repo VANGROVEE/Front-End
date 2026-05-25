@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { dailyApi } from "../api/daily.api";
-import { CreateActivityDto, UpdateActivityDto } from "../schema/actvity.schema";
+import {
+  CreateDailyActivityDto,
+  UpdateDailyActivityDto,
+} from "../schema/actvity.schema";
 
 export const useDaily = (activityId?: string) => {
   const queryClient = useQueryClient();
@@ -18,7 +21,7 @@ export const useDaily = (activityId?: string) => {
   });
 
   const createMutation = useMutation({
-    mutationFn: (values: CreateActivityDto) => dailyApi.create(values),
+    mutationFn: (values: CreateDailyActivityDto) => dailyApi.create(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["daily-activities"] });
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
@@ -27,16 +30,25 @@ export const useDaily = (activityId?: string) => {
       toast.success("Aktivitas harian berhasil dicatat");
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal mencatat aktivitas harian");
+      toast.error(
+        error?.response?.data?.message || "Gagal mencatat aktivitas harian",
+      );
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, values }: { id: string; values: UpdateActivityDto }) =>
-      dailyApi.update(id, values),
+    mutationFn: ({
+      id,
+      values,
+    }: {
+      id: string;
+      values: UpdateDailyActivityDto;
+    }) => dailyApi.update(id, values),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["daily-activities"] });
-      queryClient.invalidateQueries({ queryKey: ["daily-activities", variables.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["daily-activities", variables.id],
+      });
 
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["lands"] });
@@ -44,7 +56,9 @@ export const useDaily = (activityId?: string) => {
       toast.success("Aktivitas harian berhasil diperbarui");
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal memperbarui aktivitas harian");
+      toast.error(
+        error?.response?.data?.message || "Gagal memperbarui aktivitas harian",
+      );
     },
   });
 
@@ -58,15 +72,17 @@ export const useDaily = (activityId?: string) => {
       toast.success("Aktivitas harian berhasil dihapus");
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal menghapus aktivitas harian");
+      toast.error(
+        error?.response?.data?.message || "Gagal menghapus aktivitas harian",
+      );
     },
   });
 
-  const handleCreate = async (values: CreateActivityDto) => {
+  const handleCreate = async (values: CreateDailyActivityDto) => {
     return await createMutation.mutateAsync(values);
   };
 
-  const handleUpdate = async (id: string, values: UpdateActivityDto) => {
+  const handleUpdate = async (id: string, values: UpdateDailyActivityDto) => {
     return await updateMutation.mutateAsync({ id, values });
   };
 

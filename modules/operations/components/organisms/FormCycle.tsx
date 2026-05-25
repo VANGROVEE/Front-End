@@ -53,13 +53,13 @@ interface FormCycleProps {
 const getIconForField = (fieldId: string) => {
   const props = {
     size: 18,
-    // Perbaikan posisi tengah absolut untuk input h-12
+
     className:
       "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10 transition-colors group-focus-within:text-green-600",
   };
-  
-  // Asumsi field.id disesuaikan dari 'commodity_name' menjadi 'commodity_id'
-  if (fieldId === "commodity_id" || fieldId === "commodity_name") return <Sprout {...props} />;
+
+  if (fieldId === "commodity_id" || fieldId === "commodity_name")
+    return <Sprout {...props} />;
   if (fieldId === "variety") return <Tag {...props} />;
   if (fieldId === "planting_method") return <Settings2 {...props} />;
   if (fieldId.includes("date") || fieldId.includes("harvest"))
@@ -77,10 +77,10 @@ export const FormCycle = ({
   const form = useForm<CycleFormData>({
     defaultValues: useMemo(
       () => ({
-        commodity_id: initialData?.commodity_id || "", // Disesuaikan dengan interface
+        commodity_id: initialData?.commodity_id || "",
         variety: initialData?.variety || "",
         planting_method: initialData?.planting_method || "",
-        start_date: initialData?.start_date || undefined, // Gunakan undefined, bukan string kosong untuk Date
+        start_date: initialData?.start_date || undefined,
         estimated_harvest: initialData?.estimated_harvest || undefined,
         status: initialData?.status || "HARVESTED",
       }),
@@ -88,7 +88,6 @@ export const FormCycle = ({
     ),
   });
 
-  // Menyimpan state popover yang aktif untuk Select/Combobox agar bisa auto-close
   const [openCombobox, setOpenCombobox] = useState<Record<string, boolean>>({});
 
   return (
@@ -100,7 +99,11 @@ export const FormCycle = ({
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {fields.map((field) => {
-          const isFullWidth = ["commodity_id", "commodity_name", "status"].includes(field.id);
+          const isFullWidth = [
+            "commodity_id",
+            "commodity_name",
+            "status",
+          ].includes(field.id);
           const icon = getIconForField(field.id);
           const paddingClass = icon ? "pl-11" : "pl-4";
 
@@ -143,9 +146,14 @@ export const FormCycle = ({
                     {icon}
 
                     {field.type === "select" ? (
-                      <Popover 
-                        open={openCombobox[field.id]} 
-                        onOpenChange={(open) => setOpenCombobox(prev => ({...prev, [field.id]: open}))}
+                      <Popover
+                        open={openCombobox[field.id]}
+                        onOpenChange={(open) =>
+                          setOpenCombobox((prev) => ({
+                            ...prev,
+                            [field.id]: open,
+                          }))
+                        }
                       >
                         <PopoverTrigger asChild>
                           <Button
@@ -154,7 +162,7 @@ export const FormCycle = ({
                             role="combobox"
                             disabled={isSubmitting}
                             className={cn(
-                              "h-12 w-full justify-between rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm font-medium transition-all hover:bg-white focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10", // Menggunakan tema green
+                              "h-12 w-full justify-between rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm font-medium transition-all hover:bg-white focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10",
                               paddingClass,
                               error &&
                                 "border-red-500 focus:border-red-500 focus:ring-red-500/10",
@@ -190,10 +198,13 @@ export const FormCycle = ({
                                       value={opt.label}
                                       onSelect={() => {
                                         onChange(opt.value.toString());
-                                        // Tutup popover setelah memilih
-                                        setOpenCombobox(prev => ({...prev, [field.id]: false}));
+
+                                        setOpenCombobox((prev) => ({
+                                          ...prev,
+                                          [field.id]: false,
+                                        }));
                                       }}
-                                      className="cursor-pointer rounded-xl font-medium aria-selected:bg-green-50 aria-selected:text-green-700" // Menggunakan tema green
+                                      className="cursor-pointer rounded-xl font-medium aria-selected:bg-green-50 aria-selected:text-green-700"
                                     >
                                       <Check
                                         className={cn(
@@ -219,10 +230,11 @@ export const FormCycle = ({
                             variant="outline"
                             disabled={isSubmitting}
                             className={cn(
-                              "h-12 w-full justify-start rounded-2xl border-slate-200 bg-slate-50 text-left font-medium transition-all hover:bg-white focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10", // Menggunakan tema green dan rounded-2xl
+                              "h-12 w-full justify-start rounded-2xl border-slate-200 bg-slate-50 text-left font-medium transition-all hover:bg-white focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10",
                               paddingClass,
                               !value && "text-slate-500 font-normal",
-                              error && "border-red-500 focus:border-red-500 focus:ring-red-500/10",
+                              error &&
+                                "border-red-500 focus:border-red-500 focus:ring-red-500/10",
                             )}
                           >
                             {value ? (
@@ -242,7 +254,7 @@ export const FormCycle = ({
                             mode="single"
                             selected={value as Date}
                             onSelect={onChange}
-                            className="rounded-2xl border border-slate-200 p-3" // Padding dalam kalender agar tidak menempel
+                            className="rounded-2xl border border-slate-200 p-3"
                           />
                         </PopoverContent>
                       </Popover>

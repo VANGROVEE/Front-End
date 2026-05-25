@@ -66,7 +66,6 @@ export const HealthHistoryCard: React.FC<HealthHistoryCardProps> = ({
 }) => {
   const { healthReports, isLoadingReports } = useHealth(cycleId);
 
-  // STATE BARU: Menyimpan data laporan aktif untuk modal detail diagnosis
   const [activeDetailedReport, setActiveDetailedReport] =
     useState<HealthReport | null>(null);
 
@@ -125,30 +124,6 @@ export const HealthHistoryCard: React.FC<HealthHistoryCardProps> = ({
                 Kronologi rekam medis tanaman Anda
               </CardDescription>
             </div>
-          </div>
-
-          <div className="group relative">
-            <Button
-              onClick={onAddReport}
-              disabled={!isAiSupported || isLoadingReports}
-              className={`rounded-xl px-4 h-10 transition-all ${
-                isAiSupported
-                  ? "bg-slate-950 hover:bg-emerald-600 text-white shadow-md active:scale-95"
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
-              }`}
-            >
-              <Sparkles className="mr-2 h-4 w-4 text-emerald-400 animate-pulse" />
-              Cek AI
-            </Button>
-
-            {!isAiSupported && (
-              <Badge
-                variant="destructive"
-                className="absolute right-0 top-full mt-2 w-48 p-2 bg-slate-800 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 font-medium normal-case tracking-normal border-none"
-              >
-                Komoditas pada lahan ini belum mendukung analisis AI.
-              </Badge>
-            )}
           </div>
         </CardHeader>
 
@@ -216,7 +191,7 @@ export const HealthHistoryCard: React.FC<HealthHistoryCardProps> = ({
                       return (
                         <div
                           key={report.id}
-                          onClick={() => setActiveDetailedReport(report)} // INTERAKSI: Klik membuka modal detail
+                          onClick={() => setActiveDetailedReport(report)}
                           className="flex items-start gap-4 relative z-10 group/item cursor-pointer"
                         >
                           <div

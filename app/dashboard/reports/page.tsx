@@ -1,4 +1,4 @@
-import { LaporanPage } from "@/modules/dashboard/components/pages/laporanPage";
+import { LaporanPage } from "@/modules/report/components/pages/laporanPage";
 
 export default function Page() {
   return <LaporanPage />;

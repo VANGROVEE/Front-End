@@ -11,7 +11,6 @@ export interface Notification {
   createdAt: Date;
 }
 
-// Dummy data dulu sampai backend siap
 const dummyNotifications: Notification[] = [
   {
     id: "1",
@@ -75,11 +74,14 @@ export const useNotification = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
+  const deleteAll = () => {};
+
   return {
     notifications,
     unreadCount,
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    deleteAll,
   };
 };

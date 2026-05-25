@@ -5,26 +5,31 @@ import {
   MapPin,
   Calendar,
   Maximize2,
-  FileText,
   Navigation,
   Landmark,
+  Settings2,
+  Pencil,
+  Trash2,
+  ChevronDown,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Land } from "../../types/lands";
 
 interface LandInfoCardProps {
   land: Land;
+  onEdit?: (land: Land) => void;
+  onDelete?: (land: Land) => void;
 }
 
-export const LandInfoCard = ({ land }: LandInfoCardProps) => {
+export const LandInfoCard = ({ land, onEdit, onDelete }: LandInfoCardProps) => {
   const formattedDate = new Date(land.created_at).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
@@ -32,88 +37,117 @@ export const LandInfoCard = ({ land }: LandInfoCardProps) => {
   });
 
   return (
-    <Card className="w-full overflow-hidden rounded-[32px] border-none bg-white shadow-xl shadow-green-900/5 transition-all hover:shadow-green-900/10">
-      {/* Accent Line khas Vangrove */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-green-600 to-emerald-400" />
+    <Card className="w-full overflow-hidden rounded-[32px] border border-slate-100 bg-white shadow-xl shadow-green-900/5 transition-all hover:shadow-green-900/10 relative group">
+      {/* Visual Accent */}
+      <div className="h-2 w-full bg-gradient-to-r from-green-600 via-emerald-500 to-green-400" />
 
-      <div className="flex flex-col md:flex-row items-center">
-        <CardHeader className="flex-1 space-y-3 p-8">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-100 p-3 rounded-2xl text-green-600">
-              <Landmark size={24} />
+      <div className="flex flex-col lg:flex-row">
+        {/* --- SISI KIRI: IDENTITAS (LEBIH RINGKAS DI DESKTOP) --- */}
+        <CardHeader className="flex-1 lg:max-w-[35%] p-6 lg:p-8 space-y-4">
+          <div className="flex items-center gap-4 lg:gap-5">
+            <div className="bg-green-50 p-4 rounded-2xl text-green-600 shadow-inner flex-shrink-0 transition-transform group-hover:scale-105 duration-500">
+              <Landmark size={28} className="stroke-[1.5]" />
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <CardTitle className="text-2xl font-black tracking-tight text-slate-800">
-                  {land.name}
-                </CardTitle>
-                <Badge
-                  className={cn(
-                    "rounded-xl border-none px-3 py-1 text-[10px] font-black uppercase tracking-wider",
-                    land.land_certificate_url
-                      ? "bg-green-100 text-green-700"
-                      : "bg-orange-100 text-orange-700",
-                  )}
-                >
-                  {land.land_certificate_url
-                    ? "Sertifikasi"
-                    : "Belum Sertifikasi"}
-                </Badge>
-              </div>
-              <div className="flex items-center text-sm font-bold text-slate-400">
-                <MapPin className="mr-1.5 h-4 w-4 text-green-500" />
-                {land.location?.address || "Alamat belum diatur"}
+
+            <div className="space-y-1 min-w-0 flex-1">
+              <CardTitle className="text-xl lg:text-2xl font-black tracking-tight text-slate-800 leading-none truncate">
+                {land.name}
+              </CardTitle>
+              <div className="flex items-center text-xs font-bold text-slate-400 mt-1.5">
+                <MapPin className="mr-1.5 h-3.5 w-3.5 text-green-500 shrink-0" />
+                <span className="truncate opacity-80">
+                  {land.location?.address || "Lokasi belum ditentukan"}
+                </span>
               </div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="flex-[1.5] p-8 md:border-l border-slate-50">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+        {/* --- SISI KANAN: DATA & OPSI (MENGGUNAKAN GRID YANG FLEKSIBEL) --- */}
+        <CardContent className="flex-[2] p-6 lg:p-8 bg-slate-50/30 lg:border-l border-slate-50 flex items-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-10 w-full items-center">
             {/* Luas Area */}
-            <div className="space-y-1">
-              <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <Maximize2 className="mr-1.5 h-3 w-3" /> Luas Area
+            <div className="space-y-1.5">
+              <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">
+                <Maximize2 size={12} className="mr-2" /> Luas
               </div>
-              <div className="text-xl font-black text-slate-800">
-                {Number(land.total_area)}{" "}
-                <span className="text-xs text-slate-400">Ha</span>
+              <div className="text-xl lg:text-2xl font-black text-slate-800 flex items-baseline gap-1">
+                {Number(land.total_area)}
+                <span className="text-xs font-bold text-slate-400">Ha</span>
               </div>
             </div>
 
-            {/* Terdaftar Sejak */}
-            <div className="space-y-1">
-              <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <Calendar className="mr-1.5 h-3 w-3" /> Terdaftar
+            {/* Tanggal Terdaftar */}
+            <div className="space-y-1.5">
+              <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">
+                <Calendar size={12} className="mr-2" /> Terdaftar
               </div>
-              <div className="text-sm font-black text-slate-800">
+              <div className="text-[11px] lg:text-xs font-black text-slate-600 leading-tight">
                 {formattedDate}
               </div>
             </div>
 
-            {/* Koordinat */}
-            <div className="space-y-1 col-span-2 sm:col-span-1">
-              <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <Navigation className="mr-1.5 h-3 w-3" /> Koordinat
+            {/* GPS Koordinat */}
+            <div className="space-y-1.5 col-span-1">
+              <div className="flex items-center text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">
+                <Navigation size={12} className="mr-2" /> Koordinat
               </div>
-              <div className="font-mono text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg w-fit">
-                {land.location?.latitude.toString().slice(0, 8)},{" "}
-                {land.location?.longitude.toString().slice(0, 8)}
+              <div className="font-mono text-[9px] font-bold text-green-600 bg-green-100/30 border border-green-100 px-2 py-1 rounded-lg w-fit">
+                {land.location?.latitude}, {land.location?.longitude}
               </div>
+            </div>
+
+            {/* Tombol Opsi - Selalu di akhir grid pada desktop, atau pojok bawah pada mobile */}
+            <div className="flex justify-start md:justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    className="flex items-center gap-2 h-10 px-4 rounded-xl bg-white border border-slate-100 text-slate-500 hover:bg-green-50 hover:text-green-600 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm group/btn"
+                  >
+                    <Settings2
+                      size={14}
+                      className="stroke-[2.5] group-hover/btn:rotate-90 transition-transform duration-500"
+                    />
+                    Opsi
+                    <ChevronDown size={12} className="opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="end"
+                  className="w-52 rounded-2xl p-2 shadow-2xl border-slate-100 animate-in fade-in zoom-in-95 duration-200"
+                >
+                  <div className="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                    Manajemen Lahan
+                  </div>
+
+                  <DropdownMenuItem
+                    onClick={() => onEdit?.(land)}
+                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer focus:bg-blue-50 focus:text-blue-600 text-slate-600 font-bold text-xs transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                      <Pencil size={14} />
+                    </div>
+                    Edit Informasi
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator className="my-1 bg-slate-50" />
+
+                  <DropdownMenuItem
+                    onClick={() => onDelete?.(land)}
+                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer focus:bg-red-50 focus:text-red-600 text-red-500 font-bold text-xs transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                      <Trash2 size={14} />
+                    </div>
+                    Hapus Lahan
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </CardContent>
-
-        <CardFooter className="p-8">
-          {land.land_certificate_url && (
-            <button
-              title="Download Sertifikat"
-              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-slate-50 text-slate-400 transition-all hover:bg-green-50 hover:text-green-600"
-            >
-              <FileText size={20} />
-            </button>
-          )}
-        </CardFooter>
       </div>
     </Card>
   );

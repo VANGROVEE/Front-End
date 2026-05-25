@@ -7,7 +7,6 @@ import LandMapSection from "./LandMapSection";
 import NewsletterSection from "./NewsletterSection";
 import Footer from "./footer";
 import HowItWorks from "./HowItWorks";
-// import Footer from "./Footer";
 
 export const LandingPage = () => {
   return (

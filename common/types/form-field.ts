@@ -10,7 +10,8 @@ export interface FormField {
     | "select"
     | "date"
     | "switch"
-    | "upload";
+    | "upload"
+    | "checkbox";
   placeholder?: string;
   required?: boolean;
   options?: FieldOption[];
