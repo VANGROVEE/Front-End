@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CreateHealthReportDto, healthApi } from "../api/health.api";
 import { aiModelApi } from "../api/aiModel.api";
+import { healthApi } from "../api/health.api";
 
 export const useHealth = (cycleId?: string) => {
   const queryClient = useQueryClient();
