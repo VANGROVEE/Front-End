@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "utfs.io",
         port: "",
-        pathname: "/**", // Mengizinkan semua path gambar dari utfs.io
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "pm4hcnxzio.ufs.sh",
       },
     ],
   },

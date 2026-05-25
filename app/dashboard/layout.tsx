@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { TopNavbar } from "@/modules/dashboard/components/organisms/TopNavbar";
 import React from "react";
 
@@ -11,7 +12,9 @@ export default function DashboardLayout({
       <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
         <TopNavbar />
 
-        <section className="w-full">{children}</section>
+        <section className="w-full">
+          <TooltipProvider>{children}</TooltipProvider>
+        </section>
       </div>
     </main>
   );

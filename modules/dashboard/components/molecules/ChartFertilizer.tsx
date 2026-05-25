@@ -26,7 +26,7 @@ export const ChartFertilizer = () => {
             fill="url(#colorGreen)"
             strokeWidth={3}
           />
-          <Tooltip hide />
+          <Tooltip />
         </AreaChart>
       </ResponsiveContainer>
     </div>

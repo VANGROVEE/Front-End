@@ -1,4 +1,3 @@
-// modules/landing-page/types/index.ts
 import { LucideIcon } from "lucide-react";
 
 export interface Feature {

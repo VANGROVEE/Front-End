@@ -24,10 +24,9 @@ export type UpdateUserPayload = {
   fcm_token?: string;
 };
 
-const prefix = "/user";
+const prefix = "/users";
 const getUserId = () => useAuthStore.getState().user?.id;
 
-// Ambil token segar dari Supabase langsung
 const getFreshToken = async (): Promise<string | null> => {
   const supabase = createClient();
   const { data } = await supabase.auth.refreshSession();

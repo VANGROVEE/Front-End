@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -14,52 +14,56 @@ import {
   Bot,
   CalendarDays,
   CloudRain,
+  Inbox,
 } from "lucide-react";
 import { useNotification, Notification } from "@/common/hooks/use-notification";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
 
-const formatTime = (date: Date) => {
-  const diff = Date.now() - date.getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-  if (mins < 60) return `${mins} menit lalu`;
-  if (hours < 24) return `${hours} jam lalu`;
-  return `${days} hari lalu`;
-};
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 const getTypeIcon = (type: Notification["type"], title: string) => {
-  if (
-    title.toLowerCase().includes("ai") ||
-    title.toLowerCase().includes("rekomendasi")
-  )
-    return <Bot size={15} className="text-blue-500" />;
-  if (
-    title.toLowerCase().includes("panen") ||
-    title.toLowerCase().includes("siklus")
-  )
-    return <Sprout size={15} className="text-green-500" />;
-  if (title.toLowerCase().includes("cuaca"))
-    return <CloudRain size={15} className="text-sky-500" />;
-  if (title.toLowerCase().includes("aktivitas"))
-    return <CalendarDays size={15} className="text-orange-500" />;
+  const iconSize = 14;
+  const titleLower = title.toLowerCase();
+
+  if (titleLower.includes("ai") || titleLower.includes("rekomendasi"))
+    return <Bot size={iconSize} className="text-blue-500" />;
+  if (titleLower.includes("panen") || titleLower.includes("siklus"))
+    return <Sprout size={iconSize} className="text-green-500" />;
+  if (titleLower.includes("cuaca"))
+    return <CloudRain size={iconSize} className="text-sky-500" />;
+  if (titleLower.includes("aktivitas"))
+    return <CalendarDays size={iconSize} className="text-orange-500" />;
+
   switch (type) {
     case "success":
-      return <CheckCircle size={15} className="text-green-500" />;
+      return <CheckCircle size={iconSize} className="text-emerald-500" />;
     case "warning":
-      return <AlertTriangle size={15} className="text-yellow-500" />;
+      return <AlertTriangle size={iconSize} className="text-amber-500" />;
     case "error":
-      return <AlertCircle size={15} className="text-red-500" />;
+      return <AlertCircle size={iconSize} className="text-red-500" />;
     default:
-      return <Info size={15} className="text-blue-500" />;
+      return <Info size={iconSize} className="text-blue-500" />;
   }
 };
 
 const getTypeBg = (type: Notification["type"]) => {
   switch (type) {
     case "success":
-      return "bg-green-50";
+      return "bg-emerald-50";
     case "warning":
-      return "bg-yellow-50";
+      return "bg-amber-50";
     case "error":
       return "bg-red-50";
     default:
@@ -68,8 +72,6 @@ const getTypeBg = (type: Notification["type"]) => {
 };
 
 export const NotificationDropdown = () => {
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const {
     notifications,
     unreadCount,
@@ -78,139 +80,152 @@ export const NotificationDropdown = () => {
     deleteNotification,
   } = useNotification();
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Bell Button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="relative p-2 text-slate-400 hover:text-green-600 transition-colors"
-      >
-        <Bell size={20} />
-        {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
-            <span className="text-[9px] text-white font-black">
-              {unreadCount > 9 ? "9+" : unreadCount}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-full hover:bg-slate-100 transition-all active:scale-90"
+        >
+          <Bell size={20} className="text-slate-500" />
+          {unreadCount > 0 && (
+            <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-in zoom-in duration-300">
+              <span className="text-[8px] text-white font-black">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
             </span>
-          </span>
-        )}
-      </button>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-black text-slate-800">Notifikasi</h3>
-              {unreadCount > 0 && (
-                <span className="text-[10px] bg-red-500 text-white font-bold px-1.5 py-0.5 rounded-full">
-                  {unreadCount} baru
-                </span>
-              )}
-            </div>
+      <DropdownMenuContent
+        className="w-80 sm:w-96 p-0 rounded-[24px] overflow-hidden border-slate-100 shadow-2xl z-[60]"
+        align="end"
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50 bg-white/50 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <DropdownMenuLabel className="p-0 text-sm font-black text-slate-800 uppercase tracking-tight">
+              Notifikasi
+            </DropdownMenuLabel>
             {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="flex items-center gap-1 text-[11px] text-green-600 hover:text-green-700 font-semibold transition-colors"
-              >
-                <CheckCheck size={13} />
-                Tandai semua dibaca
-              </button>
+              <Badge className="bg-red-500 text-white hover:bg-red-500 border-none text-[9px] font-black px-1.5 h-4">
+                {unreadCount} BARU
+              </Badge>
             )}
           </div>
-
-          {/* List Notifikasi */}
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 gap-2">
-                <Bell size={32} className="text-slate-200" />
-                <p className="text-sm text-slate-400 font-medium">
-                  Tidak ada notifikasi
-                </p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-50">
-                {notifications.slice(0, 4).map((notif) => (
-                  <div
-                    key={notif.id}
-                    onClick={() => markAsRead(notif.id)}
-                    className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors relative ${
-                      !notif.isRead ? "bg-green-50/40" : ""
-                    }`}
-                  >
-                    {/* Icon */}
-                    <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${getTypeBg(notif.type)}`}
-                    >
-                      {getTypeIcon(notif.type, notif.title)}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0 pr-4">
-                      <div className="flex items-center gap-2">
-                        <p
-                          className={`text-xs font-bold truncate ${!notif.isRead ? "text-slate-800" : "text-slate-600"}`}
-                        >
-                          {notif.title}
-                        </p>
-                        {!notif.isRead && (
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0" />
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">
-                        {notif.message}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1 font-medium">
-                        {formatTime(notif.createdAt)}
-                      </p>
-                    </div>
-
-                    {/* Delete */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteNotification(notif.id);
-                      }}
-                      className="absolute top-3 right-3 p-0.5 text-slate-300 hover:text-red-400 transition-colors"
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="border-t border-slate-100">
-              <Link
-                href="/dashboard/notification"
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-1.5 py-3 text-xs text-green-600 hover:text-green-700 font-bold hover:bg-green-50 transition-colors w-full"
-              >
-                Lihat Semua Notifikasi
-                <span className="text-[10px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full font-black">
-                  {notifications.length}
-                </span>
-              </Link>
-            </div>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                markAllAsRead();
+              }}
+              className="h-7 px-2 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1 rounded-lg"
+            >
+              <CheckCheck size={12} /> Tandai dibaca
+            </Button>
           )}
         </div>
-      )}
-    </div>
+
+        <ScrollArea className="h-[380px]">
+          {notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-3">
+                <Inbox size={24} className="text-slate-200" />
+              </div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Kotak Masuk Kosong
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              {notifications.map((notif) => (
+                <div
+                  key={notif.id}
+                  className={cn(
+                    "group relative flex items-start gap-4 px-5 py-4 transition-all border-b border-slate-50/50 cursor-pointer",
+                    !notif.isRead
+                      ? "bg-emerald-50/30 hover:bg-emerald-50/50"
+                      : "hover:bg-slate-50/80",
+                  )}
+                  onClick={() => markAsRead(notif.id)}
+                >
+                  {!notif.isRead && (
+                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-full" />
+                  )}
+
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110",
+                      getTypeBg(notif.type),
+                    )}
+                  >
+                    {getTypeIcon(notif.type, notif.title)}
+                  </div>
+
+                  <div className="flex-1 min-w-0 pr-6">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <h4
+                        className={cn(
+                          "text-[11px] font-black uppercase tracking-tight truncate",
+                          !notif.isRead ? "text-slate-900" : "text-slate-500",
+                        )}
+                      >
+                        {notif.title}
+                      </h4>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-500 line-clamp-2 font-medium">
+                      {notif.message}
+                    </p>
+                    <span className="text-[9px] font-bold text-slate-300 uppercase mt-2 block">
+                      {formatDistanceToNow(new Date(notif.createdAt), {
+                        addSuffix: true,
+                        locale: id,
+                      })}
+                    </span>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-3 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity rounded-full hover:bg-red-50 hover:text-red-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteNotification(notif.id);
+                    }}
+                  >
+                    <X size={14} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+
+        <DropdownMenuSeparator className="m-0" />
+        <div className="p-2 bg-slate-50/50">
+          <Button
+            asChild
+            variant="ghost"
+            className="w-full h-10 rounded-xl hover:bg-white hover:shadow-sm"
+          >
+            <Link
+              href="/dashboard/notification"
+              className="flex items-center justify-center gap-2 text-xs font-black text-slate-600 uppercase tracking-tighter"
+            >
+              Lihat Semua Aktivitas
+              <Badge
+                variant="outline"
+                className="h-4 px-1 text-[8px] border-slate-200 text-slate-400"
+              >
+                {notifications.length}
+              </Badge>
+            </Link>
+          </Button>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

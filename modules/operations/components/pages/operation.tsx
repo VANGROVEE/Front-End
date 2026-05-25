@@ -24,8 +24,7 @@ import { getCycleFormFields } from "../../const/cycle-field";
 import { activityFormFields } from "../../const/activity-field";
 import { useCommodities } from "../../hooks/commodity-hook";
 import { HealthHistoryCard } from "../molecules/HealthHistoryCard";
-import { FormHealthCheck } from "../organisms/formHealth";
-import { healthFormFields } from "../../const/health-field";
+import { DeleteAlert } from "@/components/molecules/delete-alert";
 
 export const OperationsPage = () => {
   const [selectedLandId, setSelectedLandId] = useState<string>("");
@@ -40,47 +39,71 @@ export const OperationsPage = () => {
     handleSubmit,
     isSubmitting,
     initialData,
+    openEdit,
+    isOpenDelete,
+    closeDelete,
+    confirmDelete,
+    isDeleting,
+    openDelete,
+
     isOpenCycle,
     closeCycleForm,
     handleCycleSubmit,
     isSubmittingCycle,
     openAddCycle,
+    openEditCycle,
+    initialDataCycle,
+    isOpenDeleteCycle,
+    closeDeleteCycle,
+    confirmDeleteCycle,
+    isDeletingCycle,
+    openDeleteCycle,
+
     isOpenActivity,
     closeActivityForm,
     handleActivitySubmit,
     isSubmittingActivity,
     openAddActivity,
-    isOpenHealthCheck,
-    closeHealthCheckForm,
-    openAddHealthCheck,
-    handleHealthSubmit,
-    isSubmittingHealth,
+    handleAIPredictionOnly,
   } = useLandContext();
 
   const { commodities } = useCommodities();
   const cycleFormFields = getCycleFormFields(commodities);
 
   useEffect(() => {
-    if (lands && lands.length > 0 && !selectedLandId) {
-      setSelectedLandId(lands[0].id);
+    if (lands && lands.length > 0) {
+      const isStillExists = lands.some((l) => l.id === selectedLandId);
+      if (!selectedLandId || !isStillExists) {
+        setSelectedLandId(lands[0].id);
+      }
+    } else if (lands && lands.length === 0) {
+      setSelectedLandId("");
     }
   }, [lands, selectedLandId]);
 
-  const activeLand = useMemo(() => {
-    return landDetail;
-  }, [landDetail]);
+  const activeLand = useMemo(() => landDetail, [landDetail]);
 
-  const filteredCycles = useMemo(() => {
-    return activeLand?.planting_cycles || [];
-  }, [activeLand]);
+  const allCycles = useMemo(
+    () => activeLand?.planting_cycles || [],
+    [activeLand],
+  );
 
   useEffect(() => {
-    if (filteredCycles.length > 0) {
-      setSelectedCycle(filteredCycles[0]);
+    if (allCycles.length > 0) {
+      const isStillInList = allCycles.find(
+        (c: any) => c.id === selectedCycle?.id,
+      );
+      if (selectedCycle && isStillInList) return;
+
+      const priorityCycle =
+        allCycles.find((c: any) => c.status === "PLANTING") ||
+        allCycles.find((c: any) => c.status === "HARVESTED");
+
+      setSelectedCycle(priorityCycle || allCycles[0]);
     } else {
       setSelectedCycle(null);
     }
-  }, [filteredCycles]);
+  }, [allCycles, selectedCycle]);
 
   if (isLoadingLands && !lands) {
     return (
@@ -106,13 +129,17 @@ export const OperationsPage = () => {
       ) : activeLand ? (
         <>
           <div className="animate-in slide-in-from-top-4 duration-500">
-            <LandInfoCard land={activeLand} />
+            <LandInfoCard
+              land={activeLand}
+              onDelete={() => openDelete(activeLand)}
+              onEdit={() => openEdit(activeLand)}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <aside className="lg:col-span-4 h-full">
               <CycleListSidebar
-                cycles={filteredCycles}
+                cycles={allCycles}
                 selectedCycle={selectedCycle}
                 onSelect={setSelectedCycle}
               />
@@ -120,7 +147,11 @@ export const OperationsPage = () => {
 
             <div className="lg:col-span-8 h-full">
               {selectedCycle ? (
-                <CycleOverviewCard cycle={selectedCycle} />
+                <CycleOverviewCard
+                  cycle={selectedCycle}
+                  onEdit={() => openEditCycle(selectedCycle)}
+                  onStatusUpdate={() => openDeleteCycle(selectedCycle)}
+                />
               ) : (
                 <SpotlightCard className="rounded-[40px] border border-dashed border-slate-200 bg-white/50 h-full flex flex-col items-center justify-center min-h-[300px]">
                   <div className="p-10 flex flex-col items-center justify-center text-center">
@@ -148,16 +179,17 @@ export const OperationsPage = () => {
           </div>
 
           {selectedCycle && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in slide-in-from-bottom-4 duration-700">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in slide-in-from-bottom-4 duration-700 h">
               <ActivityTimeline
                 activities={selectedCycle.daily_activities}
+                cycleStatus={selectedCycle.status}
                 onAddActivity={() => openAddActivity(selectedCycle.id)}
               />
 
               <HealthHistoryCard
                 cycleId={selectedCycle.id}
                 isAiSupported={selectedCycle.commodity?.is_ai_supported}
-                onAddReport={() => openAddHealthCheck(selectedCycle.id)}
+                onAddReport={() => openAddActivity(selectedCycle.id)}
               />
             </div>
           )}
@@ -165,30 +197,15 @@ export const OperationsPage = () => {
       ) : (
         <div className="p-12 border-2 border-dashed border-slate-100 rounded-[40px] bg-white/50 text-center flex flex-col items-center gap-4">
           <Map className="text-slate-200" size={48} />
-          <p className="text-slate-400 font-medium font-mono text-xs uppercase tracking-widest text-balance">
+          <p className="text-slate-400 font-medium font-mono text-xs uppercase tracking-widest">
             Belum ada lahan terpilih
           </p>
         </div>
       )}
 
-      {/* DIALOG FORMS */}
-      <DynamicFormDialog
-        isOpen={isOpenHealthCheck}
-        onClose={closeHealthCheckForm}
-        title="Analisis Kesehatan AI"
-        description="Unggah foto tanaman Anda untuk dianalisis oleh AI Vangrove."
-        formId="form-health-check"
-        /* PERBAIKAN LENGKAP: Sambungkan variabel state penyerahan data ke dialog */
-        isLoading={isSubmittingHealth}
-      >
-        <FormHealthCheck
-          id="form-health-check"
-          fields={healthFormFields}
-          onSubmit={handleHealthSubmit}
-          isSubmitting={isSubmittingHealth}
-        />
-      </DynamicFormDialog>
+      {/* --- DIALOG SECTION --- */}
 
+      {/* Lahan Form */}
       <DynamicFormDialog
         isOpen={isOpen}
         onClose={closeForm}
@@ -198,43 +215,70 @@ export const OperationsPage = () => {
       >
         <FormFarmerLands
           id="form-farmer-land"
-          fields={getLandFormFields}
           initialData={initialData}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
         />
       </DynamicFormDialog>
 
+      {/* Siklus Form */}
       <DynamicFormDialog
         isOpen={isOpenCycle}
         onClose={closeCycleForm}
-        title="Mulai Siklus Tanam"
+        title={
+          initialDataCycle ? "Perbarui Siklus Tanam" : "Mulai Siklus Tanam"
+        }
         formId="form-add-cycle"
         isLoading={isSubmittingCycle}
       >
         <FormCycle
           id="form-add-cycle"
           fields={cycleFormFields}
+          initialData={initialDataCycle}
           onSubmit={handleCycleSubmit}
           isSubmitting={isSubmittingCycle}
         />
       </DynamicFormDialog>
 
+      {/* Aktivitas & Observasi (Pintu Utama Terintegrasi AI) */}
       <DynamicFormDialog
         isOpen={isOpenActivity}
         onClose={closeActivityForm}
-        title="Catat Aktivitas Harian"
-        description="Pencatatan rutin membantu AI memberikan analisis kesehatan tanaman yang lebih akurat."
-        formId="form-add-activity"
+        title="Catat Aktivitas & Observasi"
+        description="Hasil observasi akan dianalisis secara cerdas oleh Vangrove AI."
+        formId="form-activity-integrated"
         isLoading={isSubmittingActivity}
       >
         <FormActivity
-          id="form-add-activity"
+          id="form-activity-integrated"
+          cycle={selectedCycle}
           fields={activityFormFields}
+          onPredict={handleAIPredictionOnly}
           onSubmit={handleActivitySubmit}
           isSubmitting={isSubmittingActivity}
         />
       </DynamicFormDialog>
+
+      {/* Alert Lahan */}
+      <DeleteAlert
+        isOpen={isOpenDelete}
+        onClose={closeDelete}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+        itemName={`Lahan ${initialData?.name || ""}`}
+        title="Hapus Lahan?"
+      />
+
+      {/* Alert Gagal Panen */}
+      <DeleteAlert
+        isOpen={isOpenDeleteCycle}
+        onClose={closeDeleteCycle}
+        onConfirm={confirmDeleteCycle}
+        isDeleting={isDeletingCycle}
+        itemName={`Siklus ${selectedCycle?.commodity?.name || ""}`}
+        title="Laporkan Gagal Panen?"
+        description="Siklus ini akan dihentikan secara permanen. Data histori tetap dapat diakses untuk evaluasi."
+      />
     </div>
   );
 };

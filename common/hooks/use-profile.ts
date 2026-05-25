@@ -5,7 +5,6 @@ import { profileApi, UserProfile } from "@/lib/api/profil";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
 import { createClient } from "@/lib/supabase/client";
 
-// Cache key per user ID
 const getCacheKey = (userId: string) => `vangrove-profile-${userId}`;
 
 const saveToCache = (userId: string, data: UserProfile) => {
@@ -28,7 +27,6 @@ export const useProfile = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load cache saat user berubah
   useEffect(() => {
     if (user?.id) {
       const cached = loadFromCache(user.id);

@@ -22,11 +22,31 @@ export interface CreateHealthReportDto {
   notes?: string;
 }
 
-const prefix = "/health-reports";
+export interface AiRawResult {
+  disease_name: string;
+  confidence_score: number;
+  is_dangerous: boolean;
+  insight: {
+    disease_description: string;
+    causes: string;
+    treatment: string[];
+    prevention: string[];
+    recovery: string;
+  };
+}
+
+const prefix = "/ml-model";
 
 export const aiModelApi = {
   create: async (payload: CreateHealthReportDto): Promise<HealthReport> => {
     const response = await api.post(prefix, payload);
+    return response.data.data;
+  },
+
+  predictOnly: async (imageUrl: string): Promise<AiRawResult> => {
+    const response = await api.post(`${prefix}/predict-only`, {
+      image_url: imageUrl,
+    });
     return response.data.data;
   },
 };

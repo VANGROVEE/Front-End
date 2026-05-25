@@ -114,9 +114,7 @@ export const FormHealthCheck = ({
       noValidate
     >
       {hasResult ? (
-        /* ==================== SCREEN HASIL AI ==================== */
         <div className="space-y-5 animate-in fade-in zoom-in-95 duration-500">
-          {/* BANNER STATUS KESEHATAN */}
           <div
             className={cn(
               "p-5 rounded-[28px] border flex items-center justify-between gap-4 bg-white shadow-sm",
@@ -161,7 +159,6 @@ export const FormHealthCheck = ({
             </div>
           </div>
 
-          {/* WARNING WABAH */}
           {aiResult.is_outbreak_trigger && (
             <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 flex items-start gap-3">
               <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -176,7 +173,6 @@ export const FormHealthCheck = ({
             </div>
           )}
 
-          {/* VISUALISASI GAMBAR CITRA DAUN */}
           <div className="relative rounded-[32px] overflow-hidden border border-slate-100 shadow-md aspect-square sm:aspect-video flex items-center justify-center bg-slate-900">
             <Image
               fill
@@ -192,9 +188,7 @@ export const FormHealthCheck = ({
             </div>
           </div>
 
-          {/* RINGKASAN REKOMENDASI INSIGHT */}
           <div className="space-y-4">
-            {/* DESKRIPSI & PENYEBAB */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-1.5">
                 <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
@@ -218,7 +212,6 @@ export const FormHealthCheck = ({
               </div>
             </div>
 
-            {/* STRATEGI PENANGANAN (TREATMENT) */}
             <div className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm space-y-2">
               <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 w-fit px-2.5 py-1 rounded-full flex items-center gap-1">
                 <Wrench size={10} /> Tindakan Kuratif (Pengobatan)
@@ -245,7 +238,6 @@ export const FormHealthCheck = ({
               </ul>
             </div>
 
-            {/* TINDAKAN PENCEGAHAN (PREVENTION) */}
             <div className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm space-y-2">
               <h5 className="text-[10px] font-black uppercase tracking-widest text-blue-700 bg-blue-50 w-fit px-2.5 py-1 rounded-full flex items-center gap-1">
                 <Sprout size={10} /> Tindakan Preventif (Pencegahan)
@@ -270,7 +262,6 @@ export const FormHealthCheck = ({
               </ul>
             </div>
 
-            {/* PROSPEK PEMULIHAN */}
             {aiResult.gemini_insight?.recovery && (
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-[11px] leading-relaxed text-slate-500 font-medium">
                 <span className="font-bold text-slate-700 uppercase tracking-tight block mb-0.5">
@@ -282,7 +273,6 @@ export const FormHealthCheck = ({
           </div>
         </div>
       ) : (
-        /* ==================== SCREEN INPUT FORM WORKFLOW ==================== */
         <div className="grid grid-cols-1 gap-6">
           {fields.map((field) => {
             const isUploadField =
@@ -455,7 +445,6 @@ export const FormHealthCheck = ({
         </div>
       )}
 
-      {/* FOOTER INFORMASI - HANYA MUNCUL KETIKA TIDAK ADA HASIL */}
       {!hasResult && (
         <div className="p-5 rounded-[32px] bg-emerald-50/50 border border-emerald-100 flex items-start gap-4">
           <Sparkles className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />

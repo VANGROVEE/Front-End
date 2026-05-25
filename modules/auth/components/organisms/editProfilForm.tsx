@@ -75,7 +75,7 @@ export const EditProfileForm = ({
     console.log("FORM SUBMIT DATA:", data);
     const success = await onUpdate(data);
     if (success) {
-      onClose(); // ← pastikan ini ada
+      onClose();
     }
   };
 
