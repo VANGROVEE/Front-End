@@ -11,8 +11,8 @@ import {
   Settings,
 } from "lucide-react";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
-import { useProfile } from "@/common/hooks/use-profile";
-import { EditProfileForm } from "@/modules/auth/components/organisms/editProfilForm";
+import { useProfile } from "@/modules/profile/components/hooks/use-profile";
+import { EditProfileForm } from "@/modules/profile/components/molecules/editProfilForm";
 import { NotificationDropdown } from "@/modules/dashboard/components/molecules/NotificationDropdown";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -154,7 +154,7 @@ export const UserProfile = () => {
                 onClick={() => router.push("/dashboard/profile")}
                 className="rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer gap-3"
               >
-                <User size={16} /> Lihat Profil
+                <User size={16} /> Kelola Akun
               </DropdownMenuItem>
               {/* <DropdownMenuItem
                 onClick={() => setEditOpen(true)}

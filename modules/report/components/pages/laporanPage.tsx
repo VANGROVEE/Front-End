@@ -134,13 +134,3 @@ export const LaporanPage = () => {
     </div>
   );
 };
-
-
-
-
-
-
-
-
-
-

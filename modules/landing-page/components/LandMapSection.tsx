@@ -6,15 +6,16 @@ import {
   Popup,
   ZoomControl,
 } from "react-leaflet";
-import {
-  MapPin,
-  Sprout,
-  MousePointer2,
-  Layers,
-  Navigation,
-} from "lucide-react";
+import { MapPin, Sprout, MousePointer2, Navigation } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+interface FarmLand {
+  id: number;
+  name: string;
+  coord: [number, number];
+  status: string;
+}
 
 const customIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
@@ -24,9 +25,9 @@ const customIcon = new L.Icon({
 });
 
 export default function LandMapSection() {
-  const centerPosition = [-6.2, 106.816666];
+  const centerPosition: [number, number] = [-6.2, 106.816666];
 
-  const farmLands = [
+  const farmLands: FarmLand[] = [
     {
       id: 1,
       name: "Lahan Mangrove A1",
@@ -42,7 +43,7 @@ export default function LandMapSection() {
   ];
 
   return (
-    <section id="monitoring" className=" px-6 bg-white overflow-hidden">
+    <section id="monitoring" className="px-6 bg-white overflow-hidden py-20">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-[1fr,2.5fr] gap-16 items-start">
           <div className="lg:sticky lg:top-32">
@@ -118,12 +119,12 @@ export default function LandMapSection() {
                 {farmLands.map((land) => (
                   <Marker key={land.id} position={land.coord} icon={customIcon}>
                     <Popup>
-                      <div className="p-1">
+                      <div className="p-1 min-w-[150px]">
                         <p className="font-bold text-slate-900">{land.name}</p>
                         <p className="text-xs text-green-600 font-semibold mb-2 italic">
                           Status: {land.status}
                         </p>
-                        <button className="w-full bg-slate-900 text-white text-[10px] py-2 rounded-lg font-bold">
+                        <button className="w-full bg-slate-900 text-white text-[10px] py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors">
                           Detail Lahan
                         </button>
                       </div>

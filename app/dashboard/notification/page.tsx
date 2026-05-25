@@ -1,4 +1,4 @@
-import { NotificationPage } from "@/modules/dashboard/components/pages/noticationPage";
+import NotificationPage from "@/modules/notifications";
 
 export default function Page() {
   return <NotificationPage />;

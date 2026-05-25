@@ -1,4 +1,4 @@
-import { ProfilePage } from "@/modules/dashboard/components/pages/profilePage";
+import { ProfilePage } from "@/modules/profile/components/pages/profilePage";
 
 export default function Page() {
   return <ProfilePage />;
