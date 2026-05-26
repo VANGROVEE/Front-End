@@ -1,7 +1,3 @@
-export default function Home() {
-  return (
-    <main className="flex-1 flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Hello, World!</h1>
-    </main>
-  );
-}
+import LandingPage from "@/modules/landing-page/index";
+
+export default LandingPage;

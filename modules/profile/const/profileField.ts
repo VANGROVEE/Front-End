@@ -1,0 +1,32 @@
+import { FormField } from "@/common/types/form-field";
+
+export const PROFILE_FIELDS: FormField[] = [
+  {
+    id: "name",
+    label: "Nama Lengkap",
+    type: "text",
+    placeholder: "Contoh: Budi Petani Modern",
+    required: true,
+  },
+  {
+    id: "nickname",
+    label: "Nama Panggilan",
+    type: "text",
+    placeholder: "Contoh: Budi",
+    required: false,
+  },
+  {
+    id: "phone_number",
+    label: "Nomor WhatsApp",
+    type: "text",
+    placeholder: "Contoh: 081234567890",
+    required: false,
+  },
+  {
+    id: "address_home",
+    label: "Alamat Domisili",
+    type: "text",
+    placeholder: "Masukkan alamat lengkap rumah Anda",
+    required: false,
+  },
+];
