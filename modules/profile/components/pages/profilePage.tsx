@@ -197,7 +197,7 @@ export const ProfilePage = () => {
           <Separator className="bg-slate-100/50 mx-6 opacity-50" />
           <InfoItem
             icon={Phone}
-            label="Saluran WhatsApp"
+            label="Nomor Telepon"
             value={profile?.phone_number || ""}
           />
           <Separator className="bg-slate-100/50 mx-6 opacity-50" />
