@@ -17,8 +17,8 @@ export const PROFILE_FIELDS: FormField[] = [
   },
   {
     id: "phone_number",
-    label: "Nomor WhatsApp",
-    type: "text",
+    label: "Nomor Telepon",
+    type: "number",
     placeholder: "Contoh: 081234567890",
     required: false,
   },

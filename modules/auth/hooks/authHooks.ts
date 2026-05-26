@@ -41,19 +41,18 @@ export const useAuth = () => {
 
   const oauthMutation = useMutation({
     mutationFn: async () => {
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${origin}/auth/callback`,
         },
       });
       if (error) throw error;
     },
-    onError: (error) => {
-      toast.error(extractErrorMessage(error, "Gagal menyambungkan ke Google"));
-    },
   });
-
   return {
     handleLogin: loginMutation.mutate,
     isLoginLoading: loginMutation.isPending,

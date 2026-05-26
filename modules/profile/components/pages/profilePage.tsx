@@ -72,7 +72,6 @@ export const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* HEADER SECTION: Branding & Identity */}
       <Card className="rounded-[40px] border-none shadow-2xl shadow-slate-200/50 overflow-hidden bg-white">
         <div className="h-32 bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 relative">
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
@@ -126,7 +125,6 @@ export const ProfilePage = () => {
             </Button>
           </div>
 
-          {/* STATS GRID: Digital Twin of Lands */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
             <Card className="rounded-[28px] bg-slate-50/50 border-slate-100 p-6 flex items-center justify-between group hover:bg-emerald-50/50 transition-colors">
               <div className="flex flex-col gap-1">
@@ -178,7 +176,6 @@ export const ProfilePage = () => {
         </CardContent>
       </Card>
 
-      {/* DETAIL INFORMATION SECTION */}
       <Card className="rounded-[40px] border-none shadow-xl shadow-slate-100/50 bg-white">
         <CardHeader className="px-10 pt-10 pb-4">
           <div className="flex items-center gap-4">
@@ -200,7 +197,7 @@ export const ProfilePage = () => {
           <Separator className="bg-slate-100/50 mx-6 opacity-50" />
           <InfoItem
             icon={Phone}
-            label="Saluran WhatsApp"
+            label="Nomor Telepon"
             value={profile?.phone_number || ""}
           />
           <Separator className="bg-slate-100/50 mx-6 opacity-50" />
@@ -212,7 +209,6 @@ export const ProfilePage = () => {
         </CardContent>
       </Card>
 
-      {/* FOOTER METADATA */}
       <div className="flex flex-col items-center gap-3 py-6">
         <div className="flex items-center gap-4">
           <div className="h-[1px] w-12 bg-slate-200" />
@@ -229,7 +225,6 @@ export const ProfilePage = () => {
         </Badge>
       </div>
 
-      {/* MODAL OVERLAY */}
       <EditProfileForm
         open={editOpen}
         onClose={() => setEditOpen(false)}
