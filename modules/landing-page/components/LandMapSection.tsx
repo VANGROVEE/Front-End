@@ -80,5 +80,5 @@ export default function LandMapSection() {
         </div>
       </div>
     </section>
-  );
+  );  
 }
