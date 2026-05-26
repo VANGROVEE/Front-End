@@ -41,15 +41,18 @@ api.interceptors.response.use(
       Cookies.remove("token");
 
       if (typeof window !== "undefined") {
-        if (message.includes("perangkat lain")) {
-          window.location.href = "/auth?reason=multi_device";
-        } else {
-          window.location.href = "/auth?reason=session_expired";
+        const reason = message.includes("perangkat lain")
+          ? "multi_device"
+          : "session_expired";
+
+        if (!window.location.pathname.startsWith("/auth")) {
+          window.location.href = `/auth?reason=${reason}`;
         }
       }
     }
 
     const friendlyMessage = extractErrorMessage(error);
-    return Promise.reject(new Error(friendlyMessage));
+
+    return Promise.reject(error);
   },
 );
