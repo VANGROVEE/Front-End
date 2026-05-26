@@ -1,8 +1,24 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-export const StatCard = ({ icon, label, value, unit, color }: any) => {
-  const colors: any = {
+export type StatColor = "emerald" | "blue" | "amber";
+
+// 2. Buat interface untuk Props komponen
+export interface StatCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  unit: string;
+  color: StatColor;
+}
+export const StatCard = ({
+  icon,
+  label,
+  value,
+  unit,
+  color,
+}: StatCardProps) => {
+  const colors = {
     emerald: "bg-emerald-50 text-emerald-600",
     blue: "bg-blue-50 text-blue-600",
     amber: "bg-amber-50 text-amber-600",

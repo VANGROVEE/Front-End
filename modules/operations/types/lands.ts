@@ -33,16 +33,6 @@ export interface Land {
   owner: User;
 }
 
-type DailyActivity = {
-  id: string;
-  activity_date: string;
-  activity_type: string;
-  amount: number | null;
-  unit: string | null;
-  notes: string | null;
-  weather_data: { temp: number; condition: string } | null;
-};
-
 export type LandDetail = Land & {
   planting_cycles: PlantingCycle[];
 };

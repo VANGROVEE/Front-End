@@ -34,8 +34,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { getNotificationStyles } from "../../const/getNotificationStyles";
 
-
-
 export const NotificationDropdown = () => {
   const {
     notifications,

@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
-import { extractErrorMessage } from "@/common/middleware/error-handler";
+import { extractErrorMessage } from "@/common/utils/error";
+import axios from "axios";
 import Cookies from "js-cookie";
 
 export const api = axios.create({

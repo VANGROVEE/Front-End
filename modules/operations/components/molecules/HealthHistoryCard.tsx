@@ -61,8 +61,6 @@ interface HealthHistoryCardProps {
 
 export const HealthHistoryCard: React.FC<HealthHistoryCardProps> = ({
   cycleId,
-  isAiSupported = true,
-  onAddReport,
 }) => {
   const { healthReports, isLoadingReports } = useHealth(cycleId);
 

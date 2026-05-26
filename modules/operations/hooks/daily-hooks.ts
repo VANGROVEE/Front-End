@@ -1,3 +1,6 @@
+"use client";
+
+import { extractErrorMessage } from "@/common/utils/error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { dailyApi } from "../api/daily.api";
@@ -6,32 +9,59 @@ import {
   UpdateDailyActivityDto,
 } from "../schema/actvity.schema";
 
-export const useDaily = (activityId?: string) => {
+export const useDaily = ({
+  activityId,
+  cycle_id,
+}: { activityId?: string; cycle_id?: string } = {}) => {
   const queryClient = useQueryClient();
 
   const activitiesQuery = useQuery({
-    queryKey: ["daily-activities"],
-    queryFn: dailyApi.findAll,
+    queryKey: ["daily-activities", "list", { cycle_id }],
+    queryFn: () => dailyApi.findAll({ cycle_id }),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!cycle_id,
   });
 
   const activityDetailQuery = useQuery({
-    queryKey: ["daily-activities", activityId],
+    queryKey: ["daily-activities", "detail", activityId],
     queryFn: () => dailyApi.findById(activityId as string),
     enabled: !!activityId,
   });
 
+  const invalidateAllRelatedQueries = async (_id?: string) => {
+    await queryClient.invalidateQueries({
+      queryKey: ["daily-activities"],
+      exact: false,
+    });
+
+    const otherKeys = [
+      "planting-cycle",
+      "land",
+      "analytics",
+      "health-reports",
+      "harvest-reports",
+    ];
+
+    await Promise.all(
+      otherKeys.map((key) =>
+        queryClient.invalidateQueries({
+          queryKey: [key],
+          exact: false,
+          refetchType: "all",
+        }),
+      ),
+    );
+  };
+
   const createMutation = useMutation({
     mutationFn: (values: CreateDailyActivityDto) => dailyApi.create(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["daily-activities"] });
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      queryClient.invalidateQueries({ queryKey: ["lands"] });
-
+    onSuccess: async () => {
+      await invalidateAllRelatedQueries();
       toast.success("Aktivitas harian berhasil dicatat");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "Gagal mencatat aktivitas harian",
+        extractErrorMessage(error, "Gagal mencatat aktivitas harian"),
       );
     },
   });
@@ -44,64 +74,43 @@ export const useDaily = (activityId?: string) => {
       id: string;
       values: UpdateDailyActivityDto;
     }) => dailyApi.update(id, values),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["daily-activities"] });
-      queryClient.invalidateQueries({
-        queryKey: ["daily-activities", variables.id],
-      });
-
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      queryClient.invalidateQueries({ queryKey: ["lands"] });
-
+    onSuccess: async (_, variables) => {
+      await invalidateAllRelatedQueries(variables.id);
       toast.success("Aktivitas harian berhasil diperbarui");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "Gagal memperbarui aktivitas harian",
+        extractErrorMessage(error, "Gagal memperbarui aktivitas harian"),
       );
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => dailyApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["daily-activities"] });
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      queryClient.invalidateQueries({ queryKey: ["lands"] });
-
+    onSuccess: async () => {
+      await invalidateAllRelatedQueries();
       toast.success("Aktivitas harian berhasil dihapus");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "Gagal menghapus aktivitas harian",
+        extractErrorMessage(error, "Gagal menghapus aktivitas harian"),
       );
     },
   });
 
-  const handleCreate = async (values: CreateDailyActivityDto) => {
-    return await createMutation.mutateAsync(values);
-  };
-
-  const handleUpdate = async (id: string, values: UpdateDailyActivityDto) => {
-    return await updateMutation.mutateAsync({ id, values });
-  };
-
-  const handleDelete = async (id: string) => {
-    return await deleteMutation.mutateAsync(id);
-  };
-
   return {
     activities: activitiesQuery.data,
     activityDetail: activityDetailQuery.data,
-
     isLoadingActivities: activitiesQuery.isLoading,
     isLoadingDetail: activityDetailQuery.isLoading,
-
+    isRefetching: activitiesQuery.isRefetching,
     isSubmitting: createMutation.isPending || updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
-
-    handleCreate,
-    handleUpdate,
-    handleDelete,
+    handleCreate: (values: CreateDailyActivityDto) =>
+      createMutation.mutateAsync(values),
+    handleUpdate: (id: string, values: UpdateDailyActivityDto) =>
+      updateMutation.mutateAsync({ id, values }),
+    handleDelete: (id: string) => deleteMutation.mutateAsync(id),
+    refresh: () => activitiesQuery.refetch(),
   };
 };

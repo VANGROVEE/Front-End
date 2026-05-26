@@ -1,31 +1,15 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import {
-  AlertCircle,
-  BarChart3,
-  CalendarDays,
-  CheckCircle2,
-  ChevronRight,
-  History,
-  ImageIcon,
-  Scale,
-  Sprout,
-  TrendingUp,
-} from "lucide-react";
-import Image from "next/image";
+import { BarChart3, CalendarDays, Scale, TrendingUp } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useHarvestDashboard } from "../../hooks/useHarvestReport";
-import { EmptyState } from "../molecules/EmptyState";
 import { CycleListItem } from "../molecules/CycleListItem";
+import { EmptyState } from "../molecules/EmptyState";
 import { HarvestListItem } from "../molecules/HarvestListItem";
-import { StatCard } from "../molecules/StatCard";
 import { LoadingSkeleton } from "../molecules/LoadingSkeleton";
+import { StatCard } from "../molecules/StatCard";
 
 export const LaporanPage = () => {
   const { data, isLoading } = useHarvestDashboard();
@@ -101,7 +85,7 @@ export const LaporanPage = () => {
               <EmptyState message="Belum ada catatan penimbangan hasil bumi" />
             ) : (
               <div className="grid gap-3">
-                {data.history.map((report: any) => (
+                {data.history.map((report) => (
                   <HarvestListItem
                     key={report.id}
                     report={report}
@@ -119,7 +103,7 @@ export const LaporanPage = () => {
               <EmptyState message="Belum ada riwayat siklus tanam" />
             ) : (
               <div className="grid gap-4">
-                {data.cycles.map((cycle: any) => (
+                {data.cycles.map((cycle) => (
                   <CycleListItem
                     key={cycle.id}
                     cycle={cycle}

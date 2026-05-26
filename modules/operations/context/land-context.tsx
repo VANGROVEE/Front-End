@@ -2,7 +2,6 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useCycles } from "../hooks/cycle-hooks";
 import { useDaily } from "../hooks/daily-hooks";
 import { useHealth } from "../hooks/health-hooks";
@@ -167,20 +166,16 @@ export const LandFormProvider = ({
 
   const handleCycleSubmit = async (values: any) => {
     const landIdToRefresh = selectedLandId || initialDataCycle?.land_id;
-    try {
-      if (initialDataCycle?.id) {
-        await handleUpdateCycle(initialDataCycle.id, values);
-      } else {
-        await handleCreateCycle({ ...values, land_id: landIdToRefresh });
-      }
-      closeCycleForm();
-      if (landIdToRefresh) {
-        queryClient.invalidateQueries({
-          queryKey: ["land-detail", landIdToRefresh],
-        });
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Gagal menyimpan siklus");
+    if (initialDataCycle?.id) {
+      await handleUpdateCycle(initialDataCycle.id, values);
+    } else {
+      await handleCreateCycle({ ...values, land_id: landIdToRefresh });
+    }
+    closeCycleForm();
+    if (landIdToRefresh) {
+      queryClient.invalidateQueries({
+        queryKey: ["land-detail", landIdToRefresh],
+      });
     }
   };
 
@@ -201,9 +196,15 @@ export const LandFormProvider = ({
   const confirmDeleteCycle = async () => {
     if (initialDataCycle?.id) {
       const landId = initialDataCycle.land_id;
-      await handleDeleteCycle(initialDataCycle.id);
+
+      await handleUpdateCycle(initialDataCycle.id, { status: "FAILED" });
+
       closeDeleteCycle();
-      queryClient.invalidateQueries({ queryKey: ["land-detail", landId] });
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["land-detail", landId] }),
+        queryClient.invalidateQueries({ queryKey: ["planting-cycles"] }),
+      ]);
     }
   };
 
@@ -222,37 +223,24 @@ export const LandFormProvider = ({
   };
 
   const handleActivitySubmit = async (values: any) => {
-    const toastId = toast.loading("Sedang menyimpan data ke sistem...");
-    try {
-      const { imageFile, image_preview, ...finalPayload } = values;
+    const { imageFile, image_preview, ...finalPayload } = values;
 
-      await handleCreateActivity({
-        ...finalPayload,
-        cycle_id: selectedCycleId || finalPayload.cycle_id,
+    await handleCreateActivity({
+      ...finalPayload,
+      cycle_id: selectedCycleId || finalPayload.cycle_id,
+    });
+
+    closeActivityForm();
+
+    if (selectedLandId) {
+      queryClient.invalidateQueries({
+        queryKey: ["land-detail", selectedLandId],
       });
+    }
 
-      toast.success("Aktivitas berhasil disimpan", { id: toastId });
-
-      closeActivityForm();
-
-      if (selectedLandId) {
-        queryClient.invalidateQueries({
-          queryKey: ["land-detail", selectedLandId],
-        });
-      }
-
-      if (values.activity_type === "OBSERVATION") {
-        queryClient.invalidateQueries({
-          queryKey: ["health-reports", selectedCycleId || values.cycle_id],
-        });
-      }
-    } catch (error: any) {
-      toast.error("Gagal Menyimpan", {
-        id: toastId,
-        description:
-          error.response?.data?.message ||
-          error.message ||
-          "Terjadi kesalahan internal",
+    if (values.activity_type === "OBSERVATION") {
+      queryClient.invalidateQueries({
+        queryKey: ["health-reports", selectedCycleId || values.cycle_id],
       });
     }
   };

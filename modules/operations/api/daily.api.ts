@@ -1,12 +1,15 @@
-import { CreateDailyActivityDto, UpdateDailyActivityDto } from "../schema/actvity.schema";
+import {
+  CreateDailyActivityDto,
+  UpdateDailyActivityDto,
+} from "../schema/actvity.schema";
 import { DailyActivity } from "../types/activty";
 import { api } from "@/lib/axios/api";
 
 const prefix = "/daily-activities";
 
 export const dailyApi = {
-  findAll: async (): Promise<DailyActivity[]> => {
-    const response = await api.get(prefix);
+  findAll: async (params?: { cycle_id?: string }): Promise<DailyActivity[]> => {
+    const response = await api.get(prefix, { params });
     return response.data.data;
   },
 
@@ -20,7 +23,10 @@ export const dailyApi = {
     return response.data.data;
   },
 
-  update: async (id: string, payload: UpdateDailyActivityDto): Promise<DailyActivity> => {
+  update: async (
+    id: string,
+    payload: UpdateDailyActivityDto,
+  ): Promise<DailyActivity> => {
     const response = await api.patch(`${prefix}/${id}`, payload);
     return response.data.data;
   },

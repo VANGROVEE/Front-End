@@ -68,4 +68,4 @@ export const getNotificationStyles = (type: string, title: string) => {
         bg: "bg-blue-50",
       };
   }
-};  
+};

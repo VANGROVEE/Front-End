@@ -27,6 +27,9 @@ import {
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+import { useDaily } from "../../hooks/daily-hooks";
+import { EmptyState } from "@/modules/report/components/molecules/EmptyState";
+
 const getActivityIcon = (type: string) => {
   const iconProps = { size: 16 };
   switch (type) {
@@ -113,17 +116,31 @@ const renderCycleStatusBadge = (status: string) => {
 };
 
 interface ActivityTimelineProps {
-  activities: any[];
+  cycleId: string;
   cycleStatus?: string;
   onAddActivity: () => void;
 }
 
 export const ActivityTimeline = ({
-  activities = [],
+  cycleId,
   cycleStatus = "PLANTING",
   onAddActivity,
 }: ActivityTimelineProps) => {
   const isLocked = cycleStatus === "FAILED" || cycleStatus === "COMPLETED";
+  const { activities, isLoadingActivities } = useDaily({ cycle_id: cycleId });
+
+  if (isLoadingActivities) {
+    return (
+      <div className="p-8 text-center animate-pulse text-slate-400 font-bold">
+        Memuat Timeline...
+      </div>
+    );
+  }
+
+  if (!activities || activities.length === 0) {
+    // Render Empty State (Gunakan kode Anda yang sudah ada)
+    return <EmptyState message="data kosng" />;
+  }
 
   return (
     <Card className="rounded-[32px] border-none bg-white shadow-sm flex-1 overflow-hidden">
@@ -137,31 +154,12 @@ export const ActivityTimeline = ({
             Log pemantauan harian lahan Anda
           </p>
         </div>
-
-        {isLocked ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="cursor-not-allowed">
-                <Button
-                  disabled
-                  variant="secondary"
-                  size="sm"
-                  className="h-9 rounded-2xl bg-slate-50 text-slate-400 font-black text-[11px] px-5 opacity-60"
-                >
-                  <Lock size={14} className="mr-1.5" /> Catat Aktivitas
-                </Button>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="bg-slate-900 text-white text-[10px] font-bold rounded-lg border-none shadow-xl">
-              Siklus telah berakhir. Data riwayat dikunci untuk evaluasi.
-            </TooltipContent>
-          </Tooltip>
-        ) : (
+        {!isLocked && (
           <Button
             onClick={onAddActivity}
             variant="secondary"
             size="sm"
-            className="h-9 rounded-2xl bg-green-50 text-green-700 hover:bg-green-100 font-black text-[11px] px-5 transition-all active:scale-95 shadow-none"
+            className="..."
           >
             <Plus size={14} className="mr-1.5 stroke-[3]" /> Catat Aktivitas
           </Button>
@@ -169,95 +167,88 @@ export const ActivityTimeline = ({
       </CardHeader>
 
       <CardContent className="px-8 pb-10">
-        <ScrollArea className="flex-1 w-full h-[460px] pr-3">
-          {activities.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-50 rounded-[24px]">
-              <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center">
-                <Calendar size={32} className="opacity-20" />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-black text-slate-400">
-                  Belum Ada Catatan
-                </p>
-                <p className="text-[11px] font-medium text-slate-300">
-                  Aktivitas akan muncul di sini setelah dicatat
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 before:to-transparent">
-              {activities.map((activity, index) => (
-                <div
-                  key={activity.id}
-                  className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group animate-in fade-in slide-in-from-bottom-2 duration-500"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-2xl border-4 border-white bg-green-50 text-green-600 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
-                    {getActivityIcon(activity.activity_type)}
-                  </div>
+        <ScrollArea className="flex-1 w-full h-[500px] pr-3">
+          <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 before:to-transparent">
+            {activities.map((activity, index) => {
+              const currentDate = new Date(
+                activity.activity_date,
+              ).toLocaleDateString("id-ID", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
 
-                  <div className="w-[calc(100%-3.5rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm group-hover:border-green-200 group-hover:shadow-md transition-all duration-300">
-                    <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
-                        <Badge className="border-0 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 bg-green-100 text-green-700 hover:bg-green-100 shadow-none">
-                          {translateActivityType(activity.activity_type)}
-                        </Badge>
+              // Cek apakah tanggal berbeda dengan aktivitas sebelumnya untuk memunculkan label tanggal
+              const showDateLabel =
+                index === 0 ||
+                new Date(activities[index - 1].activity_date).toDateString() !==
+                  new Date(activity.activity_date).toDateString();
 
-                        {activity.cycle && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[11px] font-bold text-slate-700">
-                              {activity.cycle.commodity?.name}
-                            </span>
-                            {renderCycleStatusBadge(activity.cycle.status)}
-                          </div>
-                        )}
+              return (
+                <React.Fragment key={activity.id}>
+                  {/* DATE SEPARATOR */}
+                  {showDateLabel && (
+                    <div className="relative flex justify-center mb-8 mt-4">
+                      <span className="relative z-10 bg-slate-50 px-4 py-1.5 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-widest border border-slate-100 shadow-sm">
+                        {currentDate}
+                      </span>
+                    </div>
+                  )}
+
+                  <div
+                    className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group animate-in fade-in slide-in-from-bottom-2 duration-500"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {/* Icon Dot */}
+                    <div className="flex items-center justify-center w-10 h-10 rounded-2xl border-4 border-white bg-green-50 text-green-600 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
+                      {getActivityIcon(activity.activity_type)}
+                    </div>
+
+                    {/* Content Card */}
+                    <div className="w-[calc(100%-3.5rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm group-hover:border-green-200 group-hover:shadow-md transition-all duration-300">
+                      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <Badge className="border-0 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 bg-green-100 text-green-700">
+                            {translateActivityType(activity.activity_type)}
+                          </Badge>
+                          <span className="text-[10px] font-bold text-slate-400">
+                            {new Date(
+                              activity.activity_date,
+                            ).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        {activity.cycle?.status &&
+                          renderCycleStatusBadge(activity.cycle.status)}
                       </div>
 
-                      <time className="text-[10px] font-black text-slate-300 bg-slate-50 px-2 py-0.5 rounded-lg uppercase tracking-widest">
-                        {new Date(activity.activity_date).toLocaleTimeString(
-                          "id-ID",
-                          { hour: "2-digit", minute: "2-digit" },
+                      <p className="text-sm font-semibold text-slate-600 mb-4 leading-relaxed">
+                        {activity.notes || "Penyiraman rutin dilakukan."}
+                      </p>
+
+                      {/* Info Bar */}
+                      <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-50">
+                        {activity.amount && (
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] font-black text-slate-500 bg-slate-50/50"
+                          >
+                            VOL: {activity.amount} {activity.unit || "L"}
+                          </Badge>
                         )}
-                      </time>
-                    </div>
-
-                    <p className="text-sm font-semibold text-slate-600 mb-4 leading-relaxed">
-                      {activity.notes || "Tidak ada catatan tambahan."}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-50">
-                      {activity.amount && (
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] font-black text-slate-500 border-slate-100 bg-slate-50/50 rounded-lg"
-                        >
-                          VOLUME: {activity.amount} {activity.unit || ""}
-                        </Badge>
-                      )}
-                      {activity.weather_data && (
-                        <div className="flex gap-1.5 ml-auto">
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] font-bold text-orange-500 bg-orange-50/50 border-orange-100 rounded-lg gap-1"
-                          >
-                            <ThermometerSun size={10} strokeWidth={3} />
-                            {activity.weather_data.temperature}°C
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] font-bold text-blue-500 bg-blue-50/50 border-blue-100 rounded-lg gap-1"
-                          >
-                            <Wind size={10} strokeWidth={3} />
-                            {activity.weather_data.wind_speed} km/h
-                          </Badge>
-                        </div>
-                      )}
+                        <span className="text-[9px] font-bold text-slate-300 ml-auto flex items-center gap-1">
+                          ID: {activity.id.split("-")[0].toUpperCase()}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                </React.Fragment>
+              );
+            })}
+          </div>
         </ScrollArea>
       </CardContent>
     </Card>

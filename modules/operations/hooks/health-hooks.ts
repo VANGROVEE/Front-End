@@ -1,16 +1,15 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { aiModelApi } from "../api/aiModel.api";
 import { healthApi } from "../api/health.api";
+import { extractErrorMessage } from "@/common/utils/error";
 
 export const useHealth = (cycleId?: string) => {
   const queryClient = useQueryClient();
 
-  const {
-    data: healthReports,
-    isLoading: isLoadingReports,
-    refetch: refetchReports,
-  } = useQuery({
+  const healthQuery = useQuery({
     queryKey: ["health-reports", cycleId],
     queryFn: () => healthApi.findAll({ cycle_id: cycleId }),
     enabled: !!cycleId,
@@ -18,37 +17,48 @@ export const useHealth = (cycleId?: string) => {
 
   const predictMutation = useMutation({
     mutationFn: async (imageUrl: string) => {
-      const toastId = toast.loading("AI sedang menganalisis foto...");
-      try {
-        const response = await aiModelApi.predictOnly(imageUrl);
-        toast.dismiss(toastId);
-        return response;
-      } catch (error: any) {
-        toast.dismiss(toastId);
-        const msg =
-          error.response?.data?.message || "AI gagal mengenali gambar.";
-        toast.error("Gagal Analisis", { description: msg });
-        throw error;
-      }
+      return await aiModelApi.predictOnly(imageUrl);
+    },
+    onMutate: () => {
+      return toast.loading("Vangrove AI sedang menganalisis foto...");
+    },
+    onSuccess: (data, _, toastId) => {
+      toast.success("Analisis AI Selesai", {
+        id: toastId,
+        description: "Diagnosa berhasil dihasilkan.",
+      });
+      return data;
+    },
+    onError: (error, _, toastId) => {
+      const message = extractErrorMessage(error, "AI gagal mengenali gambar.");
+      toast.error("Gagal Analisis", {
+        id: toastId,
+        description: message,
+      });
     },
   });
 
-  const { mutateAsync: handleDelete } = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: (id: string) => healthApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["health-reports", cycleId] });
       toast.success("Laporan rekam medis dihapus");
+    },
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal menghapus laporan"));
     },
   });
 
   return {
     predictPlantHealth: predictMutation.mutateAsync,
     isPredicting: predictMutation.isPending,
+    predictionData: predictMutation.data,
 
-    healthReports,
-    isLoadingReports,
-    refetchReports,
+    healthReports: healthQuery.data,
+    isLoadingReports: healthQuery.isLoading,
+    refetchReports: healthQuery.refetch,
 
-    handleDelete,
+    handleDelete: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
   };
 };

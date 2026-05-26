@@ -1,40 +1,38 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Camera, User, Check } from "lucide-react";
+import { Camera, Check, Loader2, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-// UI Components
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
-// Modules & Libs
-import { PROFILE_FIELDS } from "@/modules/profile/const/profileField";
+import { UploadButton } from "@/common/utils/uploadthing";
+import { cn } from "@/lib/utils";
+import { UserProfile } from "@/modules/profile/components/api/profil";
 import {
   ProfileFormValues,
   profileSchema,
 } from "@/modules/profile/components/schema/profile.schema";
-import { UserProfile } from "@/modules/profile/components/api/profil";
-import { UploadButton } from "@/common/utils/uploadthing";
-import { cn } from "@/lib/utils";
+import { PROFILE_FIELDS } from "@/modules/profile/const/profileField";
 
 interface EditProfileFormProps {
   open: boolean;
   onClose: () => void;
   profile: UserProfile | null;
-  onUpdate: (data: Partial<UserProfile>) => Promise<any>;
+  onUpdate: (data: Partial<UserProfile>) => Promise<UserProfile>;
   updating: boolean;
 }
 

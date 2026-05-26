@@ -1,7 +1,15 @@
 import { CalendarDays, ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { HarvestHistory } from "../../types/harvest";
 
-export const HarvestListItem = ({ report, formatDate }: any) => (
+export interface HarvestListItemProps {
+  report: HarvestHistory;
+  formatDate: (date: string) => string; // 🌟 PERBAIKAN: Ubah void menjadi string
+}
+export const HarvestListItem = ({
+  report,
+  formatDate,
+}: HarvestListItemProps) => (
   <div className="group p-4 rounded-[24px] border border-slate-100 bg-white hover:border-emerald-200 transition-all flex items-center gap-4">
     <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
       {report.image_proof_url ? (

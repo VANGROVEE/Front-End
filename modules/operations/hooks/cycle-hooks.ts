@@ -1,3 +1,4 @@
+import { extractErrorMessage } from "@/common/utils/error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cycleApi } from "../api/cycle.api";
@@ -6,40 +7,54 @@ import {
   UpdatePlantingCycleDto,
 } from "../schema/cycle.schema";
 
-export const useCycles = (cycleId?: string) => {
+export const useCycles = (cycleId?: string, landId?: string) => {
   const queryClient = useQueryClient();
 
-  const HEATMAP_KEY = ["cycles-heatmap-calendar"];
-  const CYCLES_KEY = ["cycles"];
-  const LANDS_KEY = ["lands"];
+  const HEATMAP_KEY = "cycles-heatmap-calendar";
+  const CYCLES_KEY = "cycles";
+  const LANDS_KEY = "lands";
+  const LAND_DETAIL_KEY = "land-detail";
 
   const cyclesQuery = useQuery({
-    queryKey: CYCLES_KEY,
+    queryKey: [CYCLES_KEY],
     queryFn: cycleApi.findAll,
   });
 
   const heatmapCalendarQuery = useQuery({
     queryKey: [HEATMAP_KEY, cycleId],
     queryFn: () => cycleApi.getHeatmapCalendar(cycleId),
-    staleTime: 0,
+    enabled: true,
   });
 
   const cycleDetailQuery = useQuery({
-    queryKey: ["cycles", cycleId],
+    queryKey: [CYCLES_KEY, cycleId],
     queryFn: () => cycleApi.findById(cycleId as string),
     enabled: !!cycleId,
   });
 
-  const refreshAllData = async (targetCycleId?: string) => {
+  const refreshAllData = async (
+    targetCycleId?: string,
+    targetLandId?: string,
+  ) => {
     const promises = [
-      queryClient.invalidateQueries({ queryKey: CYCLES_KEY }),
-      queryClient.invalidateQueries({ queryKey: HEATMAP_KEY }),
-      queryClient.invalidateQueries({ queryKey: LANDS_KEY }),
+      queryClient.invalidateQueries({ queryKey: [CYCLES_KEY] }),
+      queryClient.invalidateQueries({ queryKey: [HEATMAP_KEY] }),
+      queryClient.invalidateQueries({ queryKey: [LANDS_KEY] }),
     ];
 
     if (targetCycleId) {
       promises.push(
-        queryClient.invalidateQueries({ queryKey: ["cycles", targetCycleId] }),
+        queryClient.invalidateQueries({
+          queryKey: [CYCLES_KEY, targetCycleId],
+        }),
+      );
+    }
+
+    if (targetLandId || landId) {
+      promises.push(
+        queryClient.invalidateQueries({
+          queryKey: [LAND_DETAIL_KEY, targetLandId || landId],
+        }),
       );
     }
 
@@ -48,14 +63,12 @@ export const useCycles = (cycleId?: string) => {
 
   const createMutation = useMutation({
     mutationFn: (values: CreatePlantingCycleDto) => cycleApi.create(values),
-    onSuccess: async () => {
-      await refreshAllData();
+    onSuccess: async (_, variables) => {
+      await refreshAllData(undefined, variables.land_id);
       toast.success("Siklus tanam berhasil ditambahkan");
     },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Gagal menambahkan siklus tanam",
-      );
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal menghapus siklus"));
     },
   });
 
@@ -68,13 +81,11 @@ export const useCycles = (cycleId?: string) => {
       values: UpdatePlantingCycleDto;
     }) => cycleApi.update(id, values),
     onSuccess: async (_, variables) => {
-      await refreshAllData(variables.id);
+      await refreshAllData(variables.id, variables.values.land_id);
       toast.success("Siklus tanam berhasil diperbarui");
     },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Gagal memperbarui siklus tanam",
-      );
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal memperbarui siklus tanam"));
     },
   });
 
@@ -84,39 +95,21 @@ export const useCycles = (cycleId?: string) => {
       await refreshAllData();
       toast.success("Siklus tanam berhasil dihapus");
     },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Gagal menghapus siklus tanam",
-      );
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal memperbarui siklus tanam"));
     },
   });
-
-  const handleCreate = async (values: CreatePlantingCycleDto) => {
-    return await createMutation.mutateAsync(values);
-  };
-
-  const handleUpdate = async (id: string, values: UpdatePlantingCycleDto) => {
-    return await updateMutation.mutateAsync({ id, values });
-  };
-
-  const handleDelete = async (id: string) => {
-    return await deleteMutation.mutateAsync(id);
-  };
 
   return {
     cycles: cyclesQuery.data,
     cycleDetail: cycleDetailQuery.data,
     heatmapCalendar: heatmapCalendarQuery.data,
-
-    isLoadingCycles: cyclesQuery.isLoading,
-    isLoadingDetail: cycleDetailQuery.isLoading,
-    isLoadingHeatmap: heatmapCalendarQuery.isLoading,
-
+    isLoading: cyclesQuery.isLoading || cycleDetailQuery.isLoading,
     isSubmitting: createMutation.isPending || updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
-
-    handleCreate,
-    handleUpdate,
-    handleDelete,
+    handleCreate: (v: CreatePlantingCycleDto) => createMutation.mutateAsync(v),
+    handleUpdate: (id: string, v: UpdatePlantingCycleDto) =>
+      updateMutation.mutateAsync({ id, values: v }),
+    handleDelete: (id: string) => deleteMutation.mutateAsync(id),
   };
 };

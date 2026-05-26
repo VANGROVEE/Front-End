@@ -5,5 +5,5 @@ export const useHarvestDashboard = () => {
   return useQuery({
     queryKey: ["harvest-dashboard"],
     queryFn: () => harvestReportApi.getDashboardData(),
-    });
+  });
 };

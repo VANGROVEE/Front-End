@@ -1,3 +1,4 @@
+import { extractErrorMessage } from "@/common/utils/error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { landApi } from "../api/lands-api";
@@ -29,8 +30,8 @@ export const useLands = (landId?: string) => {
       queryClient.invalidateQueries({ queryKey: ["lands-statistic"] });
       toast.success("Lahan berhasil ditambahkan");
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal menambahkan lahan");
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal menambahkan lahan"));
     },
   });
 
@@ -43,8 +44,8 @@ export const useLands = (landId?: string) => {
       queryClient.invalidateQueries({ queryKey: ["lands-statistic"] });
       toast.success("Data lahan berhasil diperbarui");
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal memperbarui lahan");
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal memperbarui lahan"));
     },
   });
 
@@ -55,8 +56,8 @@ export const useLands = (landId?: string) => {
       queryClient.invalidateQueries({ queryKey: ["lands-statistic"] });
       toast.success("Lahan berhasil dihapus");
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gagal menghapus lahan");
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal menghapus lahan"));
     },
   });
 

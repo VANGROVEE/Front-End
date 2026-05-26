@@ -1,34 +1,34 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Map, PlusCircle, Loader2 } from "lucide-react";
-
+import { DeleteAlert } from "@/components/molecules/delete-alert";
+import { DynamicFormDialog } from "@/components/molecules/DynamicDialog";
+import { Button } from "@/components/ui/button";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { Loader2, Map, PlusCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { activityFormFields } from "../../const/activity-field";
+import { getCycleFormFields } from "../../const/cycle-field";
 import { useLandContext } from "../../context/land-context";
+import { useCommodities } from "../../hooks/commodity-hook";
 import { useLands } from "../../hooks/lands-hook";
-
-import { OperationsHeader } from "../molecules/OperationsHeader";
+import { ActivityTimeline } from "../molecules/ActivityTimeline";
 import { CycleListSidebar } from "../molecules/CycleListSidebar";
 import { CycleOverviewCard } from "../molecules/CycleOverviewCard";
-import { ActivityTimeline } from "../molecules/ActivityTimeline";
-import { DynamicFormDialog } from "@/components/molecules/DynamicDialog";
-import { FormFarmerLands } from "../organisms/form-lands";
-import { FormCycle } from "../organisms/FormCycle";
-import { FormActivity } from "../organisms/FormActivity";
-import { LandInfoCard } from "../molecules/LandInfoCard";
-
-import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { Button } from "@/components/ui/button";
-
-import { getLandFormFields } from "../../const/land-filed";
-import { getCycleFormFields } from "../../const/cycle-field";
-import { activityFormFields } from "../../const/activity-field";
-import { useCommodities } from "../../hooks/commodity-hook";
 import { HealthHistoryCard } from "../molecules/HealthHistoryCard";
-import { DeleteAlert } from "@/components/molecules/delete-alert";
+import { LandInfoCard } from "../molecules/LandInfoCard";
+import { OperationsHeader } from "../molecules/OperationsHeader";
+import { FormFarmerLands } from "../organisms/form-lands";
+import { FormActivity } from "../organisms/FormActivity";
+import { FormCycle } from "../organisms/FormCycle";
+
+// 🌟 PERBAIKAN: Ubah import ini ke type lokal operations
+import type { PlantingCycle } from "../../types/cycle";
 
 export const OperationsPage = () => {
   const [selectedLandId, setSelectedLandId] = useState<string>("");
-  const [selectedCycle, setSelectedCycle] = useState<any | null>(null);
+  const [selectedCycle, setSelectedCycle] = useState<PlantingCycle | null>(
+    null,
+  );
 
   const { lands, isLoadingLands, landDetail, isLoadingDetail } =
     useLands(selectedLandId);
@@ -68,7 +68,10 @@ export const OperationsPage = () => {
   } = useLandContext();
 
   const { commodities } = useCommodities();
-  const cycleFormFields = getCycleFormFields(commodities);
+  const cycleFormFields = useMemo(
+    () => getCycleFormFields(commodities),
+    [commodities],
+  );
 
   useEffect(() => {
     if (lands && lands.length > 0) {
@@ -90,20 +93,19 @@ export const OperationsPage = () => {
 
   useEffect(() => {
     if (allCycles.length > 0) {
-      const isStillInList = allCycles.find(
-        (c: any) => c.id === selectedCycle?.id,
-      );
+      const isStillInList = allCycles.find((c) => c.id === selectedCycle?.id);
+
       if (selectedCycle && isStillInList) return;
 
       const priorityCycle =
-        allCycles.find((c: any) => c.status === "PLANTING") ||
-        allCycles.find((c: any) => c.status === "HARVESTED");
+        allCycles.find((c) => c.status === "PLANTING") ||
+        allCycles.find((c) => c.status === "HARVESTED");
 
       setSelectedCycle(priorityCycle || allCycles[0]);
     } else {
       setSelectedCycle(null);
     }
-  }, [allCycles, selectedCycle]);
+  }, [allCycles, selectedCycle?.id]);
 
   if (isLoadingLands && !lands) {
     return (
@@ -148,7 +150,7 @@ export const OperationsPage = () => {
             <div className="lg:col-span-8 h-full">
               {selectedCycle ? (
                 <CycleOverviewCard
-                  cycle={selectedCycle}
+                  cycleId={selectedCycle.id}
                   onEdit={() => openEditCycle(selectedCycle)}
                   onStatusUpdate={() => openDeleteCycle(selectedCycle)}
                 />
@@ -179,16 +181,16 @@ export const OperationsPage = () => {
           </div>
 
           {selectedCycle && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in slide-in-from-bottom-4 duration-700 h">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start animate-in slide-in-from-bottom-4 duration-700">
               <ActivityTimeline
-                activities={selectedCycle.daily_activities}
+                cycleId={selectedCycle.id}
                 cycleStatus={selectedCycle.status}
                 onAddActivity={() => openAddActivity(selectedCycle.id)}
               />
 
               <HealthHistoryCard
                 cycleId={selectedCycle.id}
-                isAiSupported={selectedCycle.commodity?.is_ai_supported}
+                isAiSupported={!!selectedCycle.commodity?.is_ai_supported}
                 onAddReport={() => openAddActivity(selectedCycle.id)}
               />
             </div>
@@ -203,9 +205,6 @@ export const OperationsPage = () => {
         </div>
       )}
 
-      {/* --- DIALOG SECTION --- */}
-
-      {/* Lahan Form */}
       <DynamicFormDialog
         isOpen={isOpen}
         onClose={closeForm}
@@ -221,7 +220,6 @@ export const OperationsPage = () => {
         />
       </DynamicFormDialog>
 
-      {/* Siklus Form */}
       <DynamicFormDialog
         isOpen={isOpenCycle}
         onClose={closeCycleForm}
@@ -240,7 +238,6 @@ export const OperationsPage = () => {
         />
       </DynamicFormDialog>
 
-      {/* Aktivitas & Observasi (Pintu Utama Terintegrasi AI) */}
       <DynamicFormDialog
         isOpen={isOpenActivity}
         onClose={closeActivityForm}
@@ -259,7 +256,6 @@ export const OperationsPage = () => {
         />
       </DynamicFormDialog>
 
-      {/* Alert Lahan */}
       <DeleteAlert
         isOpen={isOpenDelete}
         onClose={closeDelete}
@@ -269,7 +265,6 @@ export const OperationsPage = () => {
         title="Hapus Lahan?"
       />
 
-      {/* Alert Gagal Panen */}
       <DeleteAlert
         isOpen={isOpenDeleteCycle}
         onClose={closeDeleteCycle}

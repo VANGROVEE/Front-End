@@ -1,39 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
 import {
+  ExternalLink,
+  LucideIcon,
   Mail,
-  Phone,
+  Map as MapIcon,
   MapPin,
-  User,
+  Maximize2,
   Pencil,
+  Phone,
   ShieldCheck,
   Trees,
-  Maximize2,
-  ExternalLink,
-  Map as MapIcon,
+  User,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
-import { useProfile } from "@/modules/profile/components/hooks/use-profile";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useProfile } from "@/modules/profile/components/hooks/use-profile";
 
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+import { Land } from "@/modules/operations/types/lands";
 import { EditProfileForm } from "@/modules/profile/components/molecules/editProfilForm";
 import { LoadingState } from "../molecules/LoadingState";
-import { cn } from "@/lib/utils";
 
 const InfoItem = ({
   icon: Icon,
   label,
   value,
 }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   value: string;
 }) => (
@@ -62,7 +63,7 @@ export const ProfilePage = () => {
   const landCount = profile?._count?.lands || 0;
   const totalArea =
     profile?.lands?.reduce(
-      (acc: number, land: any) => acc + land.total_area,
+      (acc: number, land: Land) => acc + land.total_area,
       0,
     ) || 0;
   const userInitial = displayName.charAt(0).toUpperCase();

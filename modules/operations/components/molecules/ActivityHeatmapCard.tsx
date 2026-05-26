@@ -35,9 +35,8 @@ import {
 import { startOfDay, isBefore, format, eachDayOfInterval } from "date-fns";
 
 export const ActivityHeatmapCard = ({ cycle }: { cycle: PlantingCycle }) => {
-  const { heatmapCalendar: heatmapData, isLoadingHeatmap } = useCycles(
-    cycle?.id,
-  );
+  const { heatmapCalendar: heatmapData, isLoading: isLoadingHeatmap } =
+    useCycles(cycle?.id);
 
   const getColorForActivity = (type: string, level: number) => {
     if (level === 0) return "#f1f5f9";
@@ -60,11 +59,9 @@ export const ActivityHeatmapCard = ({ cycle }: { cycle: PlantingCycle }) => {
   };
 
   const formattedData = useMemo(() => {
-    
     const start = startOfDay(new Date(cycle.start_date));
-    const end = startOfDay(new Date()); 
+    const end = startOfDay(new Date());
 
-    
     const allDays = eachDayOfInterval({ start, end });
     const emptyMap: Record<string, any> = {};
     allDays.forEach((day) => {
@@ -75,7 +72,6 @@ export const ActivityHeatmapCard = ({ cycle }: { cycle: PlantingCycle }) => {
       };
     });
 
-    
     const rawActivities = heatmapData || [];
     rawActivities.forEach((item) => {
       const level =
@@ -156,11 +152,9 @@ export const ActivityHeatmapCard = ({ cycle }: { cycle: PlantingCycle }) => {
                     weekdays: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
                   }}
                   renderBlock={(block, activity) => {
-                    
                     const metadata = (activity as any)?.metadata;
                     const dominantType = metadata?.dominant_type || "NONE";
 
-                    
                     const customColor = getColorForActivity(
                       dominantType,
                       activity?.level || 0,

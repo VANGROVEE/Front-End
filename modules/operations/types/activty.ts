@@ -1,3 +1,6 @@
+import { Commodity } from "./commodity";
+import { PlantingCycle } from "./cycle";
+
 export interface DailyActivity {
   id: string;
   cycle_id: string;
@@ -12,4 +15,6 @@ export interface DailyActivity {
   } | null;
   unit?: string;
   notes?: string;
+  commodity: Commodity;
+  cycle: PlantingCycle;
 }

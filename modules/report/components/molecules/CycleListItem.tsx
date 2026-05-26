@@ -2,8 +2,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle2, ChevronRight, Sprout } from "lucide-react";
-
-export const CycleListItem = ({ cycle, formatDate }: any) => {
+import { DashboardCycle } from "../../types/harvest";
+export interface CycleListItemProps {
+  cycle: DashboardCycle;
+  formatDate: (date: string) => string; // Mengembalikan string untuk dirender
+}
+export const CycleListItem = ({ cycle, formatDate }: CycleListItemProps) => {
   const isFailed = cycle.status === "FAILED";
   const isCompleted =
     cycle.status === "COMPLETED" || cycle.status === "HARVESTED";
@@ -37,7 +41,10 @@ export const CycleListItem = ({ cycle, formatDate }: any) => {
               </span>
               <span>—</span>
               <span className="bg-slate-50 px-1.5 py-0.5 rounded-md">
-                {formatDate(cycle.end_date)}
+                {cycle.end_date
+                  ? formatDate(cycle.end_date)
+                  : "Tanggal tidak ada"}{" "}
+                |
               </span>
             </div>
           </div>
@@ -63,7 +70,7 @@ export const CycleListItem = ({ cycle, formatDate }: any) => {
               AI Failure Analysis
             </p>
             <p className="text-[11px] text-slate-600 leading-relaxed italic">
-              "{cycle.ai_explanation}"
+              {cycle.ai_explanation}
             </p>
           </div>
         </div>

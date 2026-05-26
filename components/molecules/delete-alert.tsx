@@ -48,8 +48,9 @@ export const DeleteAlert = ({
             ) : (
               <>
                 Apakah Anda yakin ingin menghapus{" "}
-                <span className="font-bold text-slate-900">{itemName}</span>? Tindakan ini tidak
-                dapat dibatalkan dan semua data terkait akan dihapus secara permanen.
+                <span className="font-bold text-slate-900">{itemName}</span>?
+                Tindakan ini tidak dapat dibatalkan dan semua data terkait akan
+                dihapus secara permanen.
               </>
             )}
           </AlertDialogDescription>

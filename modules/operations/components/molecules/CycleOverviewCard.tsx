@@ -35,30 +35,34 @@ import { PlantingCycle } from "../../types/cycle";
 import { formatDate } from "../../utils/formatDate";
 import { cn } from "@/lib/utils";
 import { ActivityHeatmapCard } from "./ActivityHeatmapCard";
+import { useCycles } from "../../hooks/cycle-hooks";
+import { EmptyState } from "@/modules/report/components/molecules/EmptyState";
 
 interface CycleOverviewCardProps {
-  cycle: PlantingCycle;
+  cycleId: string;
   onEdit?: (cycle: PlantingCycle) => void;
   onStatusUpdate?: (id: string, payload: { status: string }) => void;
 }
 
 export const CycleOverviewCard = ({
-  cycle,
+  cycleId,
   onEdit,
   onStatusUpdate,
 }: CycleOverviewCardProps) => {
-  const isHarvested = cycle.status === "HARVESTED";
-  const isFailed = cycle.status === "FAILED";
-  const activityCount = cycle.daily_activities?.length || 0;
+  const { cycleDetail: cycle } = useCycles(cycleId);
+
+  const isHarvested = cycle?.status === "HARVESTED";
+  const isFailed = cycle?.status === "FAILED";
+  const activityCount = cycle?.daily_activities?.length || 0;
 
   const hasStartedActivities = activityCount > 0;
 
   const calculateAge = () => {
-    if (!cycle.start_date) return 0;
-    const start = new Date(cycle.start_date).getTime();
+    if (!cycle?.start_date) return 0;
+    const start = new Date(cycle?.start_date).getTime();
     const end =
-      (isHarvested || isFailed) && cycle.estimated_harvest
-        ? new Date(cycle.estimated_harvest).getTime()
+      (isHarvested || isFailed) && cycle?.estimated_harvest
+        ? new Date(cycle?.estimated_harvest).getTime()
         : new Date().getTime();
 
     const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
@@ -66,6 +70,10 @@ export const CycleOverviewCard = ({
   };
 
   const plantAge = calculateAge();
+
+  if (!cycle) {
+    return <EmptyState message="data tidak ditemukan" />;
+  }
 
   return (
     <TooltipProvider>
@@ -76,7 +84,6 @@ export const CycleOverviewCard = ({
         <div className="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none opacity-50" />
 
         <CardContent className="p-6 lg:p-8 relative z-10 flex flex-col h-full gap-8">
-          {/* --- SECTION 1: HEADER & OPTIONS --- */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div
@@ -95,7 +102,7 @@ export const CycleOverviewCard = ({
               <div className="space-y-1.5 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-xl lg:text-2xl font-black text-slate-800 tracking-tight truncate uppercase">
-                    {cycle.commodity.name || "Komoditas"}
+                    {cycle?.commodity.name || "Komoditas"}
                   </h2>
                   {isHarvested && (
                     <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-black text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-lg">
@@ -113,7 +120,7 @@ export const CycleOverviewCard = ({
                   className="text-[10px] font-bold text-green-600 border-green-100 bg-green-50/50 gap-1.5 px-3 py-1 rounded-full"
                 >
                   <Leaf size={12} />
-                  {cycle.variety || "Varietas Standar"}
+                  {cycle?.variety || "Varietas Standar"}
                 </Badge>
               </div>
             </div>
@@ -137,7 +144,6 @@ export const CycleOverviewCard = ({
                   Kontrol Data
                 </div>
 
-                {/* TOOLTIP DISABLE EDIT JIKA SUDAH ADA AKTIVITAS */}
                 {hasStartedActivities ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -170,10 +176,9 @@ export const CycleOverviewCard = ({
 
                 <DropdownMenuSeparator className="my-1 bg-slate-50" />
 
-                {/* GAGAL PANEN: Memicu update status ke FAILED */}
                 <DropdownMenuItem
                   onClick={() =>
-                    onStatusUpdate?.(cycle.id, { status: "FAILED" })
+                    onStatusUpdate?.(cycle?.id, { status: "FAILED" })
                   }
                   disabled={isFailed || isHarvested}
                   className="flex items-center gap-3 p-3 rounded-xl cursor-pointer text-red-500 font-bold text-xs hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -187,7 +192,6 @@ export const CycleOverviewCard = ({
             </DropdownMenu>
           </div>
 
-          {/* --- SECTION 2: AGE METRIC --- */}
           <div className="bg-slate-50/50 border border-slate-100 rounded-[28px] p-5 flex items-center justify-between transition-colors hover:bg-white hover:border-green-100">
             <div className="flex items-center gap-3 text-left">
               <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-green-500 shadow-sm border border-slate-50">
@@ -217,19 +221,17 @@ export const CycleOverviewCard = ({
             </div>
           </div>
 
-          {/* --- SECTION 3: ANALYTIC HEATMAP --- */}
           <div className="flex-1 min-h-[140px] flex flex-col justify-center bg-white border border-slate-50 rounded-[28px] p-4 shadow-inner overflow-hidden">
             <ActivityHeatmapCard cycle={cycle} />
           </div>
 
-          {/* --- SECTION 4: GRID STATS --- */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-auto">
             <div className="bg-white p-4 rounded-2xl border border-slate-100 transition-all hover:border-green-100 hover:shadow-sm">
               <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.1em] flex items-center gap-2 mb-2">
                 <Calendar size={12} className="text-green-500" /> Start
               </p>
               <p className="text-[11px] font-black text-slate-700 uppercase leading-none">
-                {formatDate(cycle.start_date)}
+                {formatDate(cycle?.start_date)}
               </p>
             </div>
 
@@ -238,8 +240,8 @@ export const CycleOverviewCard = ({
                 <CheckCircle2 size={12} className="text-green-500" /> Estimasi
               </p>
               <p className="text-[11px] font-black text-slate-700 uppercase leading-none">
-                {cycle.estimated_harvest
-                  ? formatDate(cycle.estimated_harvest)
+                {cycle?.estimated_harvest
+                  ? formatDate(cycle?.estimated_harvest)
                   : "-"}
               </p>
             </div>
@@ -250,9 +252,9 @@ export const CycleOverviewCard = ({
               </p>
               <p
                 className="text-[11px] font-black text-slate-700 truncate uppercase leading-none"
-                title={cycle.planting_method || "Konvensional"}
+                title={cycle?.planting_method || "Konvensional"}
               >
-                {cycle.planting_method || "Konvensional"}
+                {cycle?.planting_method || "Konvensional"}
               </p>
             </div>
 

@@ -3,11 +3,12 @@ import {
   CreateHarvestReportDto,
   UpdateHarvestReportDto,
 } from "../schema/harvestReport.schema";
+import { DashboardData } from "../types/harvest";
 
 const prefix = "/harvest-report";
 
 export const harvestReportApi = {
-  getDashboardData: async () => {
+  getDashboardData: async (): Promise<DashboardData> => {
     const response = await api.get(`${prefix}/dashboard`);
     return response.data.data;
   },

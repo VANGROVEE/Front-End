@@ -1,4 +1,11 @@
-import { CalendarIcon, ClipboardList, Droplets, PenLine, Scale, Sprout } from "lucide-react";
+import {
+  CalendarIcon,
+  ClipboardList,
+  Droplets,
+  PenLine,
+  Scale,
+  Sprout,
+} from "lucide-react";
 
 export const getIconForField = (type: string, fieldId: string) => {
   const props = {

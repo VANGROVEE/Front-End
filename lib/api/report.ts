@@ -1,13 +1,14 @@
 import { api } from "@/lib/axios/api";
+import { Commodity } from "@/modules/operations/types/commodity";
 
 export interface PlantingCycle {
   id: string;
-  commodity_name: string;
+  commodity: Commodity;
   variety: string | null;
   planting_method: string | null;
   start_date: string;
   estimated_harvest: string | null;
-  status: "ACTIVE" | "COMPLETED" | "FAILED";
+  status: "PLANTING" | "HARVESTED" | "COMPLETED" | "FAILED";
   land_id: string;
 }
 

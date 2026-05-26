@@ -23,7 +23,6 @@ export interface HealthReport {
   };
 }
 
-
 export interface CreateHealthReportDto {
   cycle_id: string;
   image_url: string;
@@ -38,8 +37,6 @@ export const healthApi = {
     const response = await api.get(prefix, { params });
     return response.data.data;
   },
-
-  
 
   findById: async (id: string): Promise<HealthReport> => {
     const response = await api.get(`${prefix}/${id}`);

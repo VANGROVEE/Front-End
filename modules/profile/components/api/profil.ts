@@ -1,5 +1,6 @@
-import { api } from "@/lib/axios/api";
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { api } from "@/lib/axios/api";
+import { Land } from "@/modules/operations/types/lands";
 
 export interface UserProfile {
   id: string;
@@ -11,7 +12,7 @@ export interface UserProfile {
   bio: string | null;
   address_home: string | null;
   role: "FARMER" | "ADMIN";
-  lands?: any[];
+  lands?: Land[];
   _count?: {
     lands: number;
   };
