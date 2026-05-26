@@ -1,5 +1,4 @@
 import { useAuthStore } from "@/common/icons/stores/use-auth-store";
-import { extractErrorMessage } from "@/common/utils/error";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -24,34 +23,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const friendlyMessage = extractErrorMessage(error);
-    return Promise.reject(new Error(friendlyMessage));
-  },
-);
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || "";
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status;
-    const message = error.response?.data?.message || "";
+      if (status === 401) {
+        useAuthStore.getState().logout();
+        Cookies.remove("token");
 
-    if (status === 401) {
-      useAuthStore.getState().logout();
+        if (typeof window !== "undefined") {
+          const reason = message.includes("perangkat lain")
+            ? "multi_device"
+            : "session_expired";
 
-      Cookies.remove("token");
-
-      if (typeof window !== "undefined") {
-        const reason = message.includes("perangkat lain")
-          ? "multi_device"
-          : "session_expired";
-
-        if (!window.location.pathname.startsWith("/auth")) {
-          window.location.href = `/auth?reason=${reason}`;
+          if (!window.location.pathname.startsWith("/auth")) {
+            window.location.href = `/auth?reason=${reason}`;
+          }
         }
       }
     }
-
-    const friendlyMessage = extractErrorMessage(error);
 
     return Promise.reject(error);
   },
