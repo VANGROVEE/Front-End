@@ -1,15 +1,21 @@
-import { HeatmapData, PlantingCycle } from "../types/cycle";
+import { api } from "@/lib/axios/api";
 import {
   CreatePlantingCycleDto,
   UpdatePlantingCycleDto,
 } from "../schema/cycle.schema";
-import { api } from "@/lib/axios/api";
+import { CycleSummary, HeatmapData, PlantingCycle } from "../types/cycle";
 
 const prefix = "/planting-cycle";
 
 export const cycleApi = {
   findAll: async (): Promise<PlantingCycle[]> => {
     const response = await api.get(prefix);
+    return response.data.data;
+  },
+  getSummary: async (cycleId: string): Promise<CycleSummary> => {
+    const response = await api.get(`${prefix}/cycle-summary`, {
+      params: { cycle_id: cycleId },
+    });
     return response.data.data;
   },
 

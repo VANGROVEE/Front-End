@@ -35,3 +35,27 @@ export interface HeatmapData {
   details: Record<string, number>;
   dominant_type: string;
 }
+
+export interface CycleSummary {
+  id: string;
+  status: string;
+  commodity_name: string;
+  land_name: string;
+  duration_days: number;
+  total_activities: number;
+  total_health_issues: number;
+  resources: {
+    water_used_liter: number;
+    fertilizer_used_kg: number;
+  };
+  harvest: {
+    id: string;
+    cycle_id: string;
+    total_yield_kg: number;
+    ai_quality_metrics: any | null;
+    quality_grade: string;
+    image_proof_url: string;
+    price_sold_per_kg: number | null;
+    created_at: string;
+  } | null;
+}

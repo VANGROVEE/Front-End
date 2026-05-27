@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   Droplets,
   Lock,
-  MoreHorizontal, // Tidak terpakai
+  MoreHorizontal,
   Plus,
   Search,
   Sprout,
@@ -165,7 +165,6 @@ export const ActivityTimeline = ({
                   year: "numeric",
                 });
 
-                // Cek apakah tanggal berbeda dengan aktivitas sebelumnya untuk memunculkan label tanggal
                 const showDateLabel =
                   index === 0 ||
                   new Date(
