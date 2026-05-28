@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 export const UserProfile = () => {
   const { user, logout } = useAuthStore();
@@ -47,7 +48,7 @@ export const UserProfile = () => {
   return (
     <>
       <div className="flex items-center gap-3 sm:gap-4">
-        {/* <NotificationDropdown /> */}
+        <NotificationDropdown />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -1,26 +1,27 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { Resolver, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
 import {
+  Check,
   FileText,
+  Loader2,
+  LocateFixed,
   MapPin,
   Maximize,
-  Search,
-  Loader2,
   Navigation,
-  LocateFixed,
-  Check,
+  Search,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+import React, { useEffect, useMemo, useState } from "react";
+import { Resolver, useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { AreaConverter } from "@/common/utils/unit";
 import { landSchema, type LandFormData } from "../../schema/land-schema";
 import { Land } from "../../types/lands";
 
@@ -62,7 +63,7 @@ export const FormFarmerLands = ({
       () => ({
         name: initialData?.name || "",
         total_area: initialData?.total_area
-          ? Number(initialData.total_area)
+          ? AreaConverter.toHectare(initialData.total_area)
           : 0,
         location: {
           address: initialData?.location?.address || "",

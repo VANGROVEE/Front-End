@@ -1,5 +1,6 @@
 "use client";
 
+import { AreaConverter } from "@/common/utils/unit";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useCycles } from "../hooks/cycle-hooks";
@@ -119,11 +120,24 @@ export const LandFormProvider = ({
 
   const handleSubmit = async (values: LandFormData) => {
     try {
-      if (initialData?.id) await handleUpdate(initialData.id, values);
-      else await handleCreate(values);
+      const mappedValues = {
+        ...values,
+        total_area: AreaConverter.toMeter(values.total_area),
+      };
+
+      if (initialData?.id) {
+        await handleUpdate(initialData.id, mappedValues);
+      } else {
+        await handleCreate(mappedValues);
+      }
+
       closeForm();
+
       queryClient.invalidateQueries({ queryKey: ["lands"] });
-    } catch (error) {}
+      queryClient.invalidateQueries({ queryKey: ["analyze", "spatial"] });
+    } catch (error) {
+      console.error("Gagal menyimpan lahan:", error);
+    }
   };
 
   const openDelete = (land: Land) => {

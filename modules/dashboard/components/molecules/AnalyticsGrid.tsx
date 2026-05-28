@@ -1,16 +1,8 @@
 "use client";
 
-import React from "react";
-import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import {
-  Sprout,
-  Droplets,
-  ThermometerSun,
-  History,
-  Bug,
-  Activity,
-} from "lucide-react";
-import { dataTren, dataLogs, dataWeather } from "../const/data";
+import { Activity, Bug, Droplets, History, Sprout } from "lucide-react";
+import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
+import { dataLogs, dataTren } from "../const/data";
 
 export const AnalyticsGrid = () => {
   const getLogIcon = (type: string) => {
@@ -70,34 +62,6 @@ export const AnalyticsGrid = () => {
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* 2. Card: Prediksi Cuaca (Dynamic from dummy) */}
-      <div className="bg-[#1e293b] p-6 rounded-3xl text-white shadow-xl shadow-slate-200">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.15em]">
-            Prediksi Cuaca
-          </h3>
-          <ThermometerSun className="text-amber-400" size={20} />
-        </div>
-        <div className="space-y-3">
-          {dataWeather.map((w, i) => (
-            <div
-              key={i}
-              className="flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-2xl border border-white/5"
-            >
-              <div className="flex flex-col">
-                <span className="text-sm font-bold">{w.day}</span>
-                <span className="text-[10px] text-slate-400">
-                  {w.condition}
-                </span>
-              </div>
-              <span className="font-mono font-bold text-green-400">
-                {w.temp}°C / {w.humidity}%
-              </span>
-            </div>
-          ))}
         </div>
       </div>
 
