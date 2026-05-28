@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios/api";
-import { SpatialAnalysisResponse } from "../types/analyze.type";
+import { HealthReport, SpatialAnalysisResponse } from "../types/analyze.type";
 
 const prefix = "/analyze";
 
@@ -7,6 +7,10 @@ export const analyzeApi = {
   getSpatial: async (): Promise<SpatialAnalysisResponse> => {
     const response = await api.get(`${prefix}/spatial`);
     return response.data.data;
+  },
+  getHealth: async (): Promise<HealthReport[]> => {
+    const response = await api.get(`${prefix}/health-reports`);
+    return response.data.data; // Mengambil array laporan kesehatan
   },
 
   /**

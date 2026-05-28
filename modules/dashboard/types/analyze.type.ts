@@ -37,3 +37,33 @@ export interface SpatialAnalysisResponse {
   summary: DashboardSummary;
   last_sync: string;
 }
+
+export interface GeminiInsight {
+  causes: string;
+  recovery: string;
+  treatment: string[];
+  prevention: string[];
+  disease_description: string;
+}
+
+export interface HealthReport {
+  id: string;
+  confidence_score: number;
+  gemini_insight: GeminiInsight; // Sudah tidak 'any' lagi
+  is_outbreak_trigger: boolean;
+  created_at: string;
+  cycle: {
+    id?: string;
+    commodity_name: string; // Sesuai mapping backend terbaru
+    start_date: string;
+  };
+  disease?: {
+    name: string;
+  } | null;
+}
+
+// Interface tambahan untuk struktur data yang sudah dikelompokkan per Lahan
+export interface LandHealthGroup {
+  land_name: string;
+  reports: HealthReport[];
+}
