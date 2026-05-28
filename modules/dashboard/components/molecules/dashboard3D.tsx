@@ -32,10 +32,10 @@ import { DashboardError } from "./DashboardError";
 import { DashboardSkeleton } from "./DashboardSkeleton";
 import { StatCard } from "./StatCard";
 
-const MapViewer = dynamic(
-  () => import("../../../landing-page/components/MapViewer"),
-  { ssr: false, loading: () => <DashboardSkeleton /> },
-);
+const MapViewer = dynamic(() => import("./MapViewer"), {
+  ssr: false,
+  loading: () => <DashboardSkeleton />,
+});
 
 export const Dashboard3D = () => {
   const {
