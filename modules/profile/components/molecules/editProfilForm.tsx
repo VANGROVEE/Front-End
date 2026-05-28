@@ -33,7 +33,7 @@ interface EditProfileFormProps {
   open: boolean;
   onClose: () => void;
   profile: UserProfile | null;
-  onUpdate: (data: Partial<UserProfile>) => Promise<UserProfile>;
+  onUpdate: (data: ProfileFormValues) => Promise<any>;
   updating: boolean;
 }
 
@@ -44,8 +44,8 @@ export const EditProfileForm = ({
   onUpdate,
   updating,
 }: EditProfileFormProps) => {
-  const [previewUrl, setAvatarUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -64,31 +64,35 @@ export const EditProfileForm = ({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = form;
 
+  // Pantau perubahan avatar_url di dalam form untuk preview
+  const currentAvatarUrl = watch("avatar_url");
+
+  // Inisialisasi data saat modal dibuka atau profile berubah
   useEffect(() => {
-    if (profile && open) {
-      reset({
+    if (open && profile) {
+      const initialData = {
         name: profile.name || "",
         nickname: profile.nickname || "",
         phone_number: profile.phone_number || "",
         bio: profile.bio || "",
         address_home: profile.address_home || "",
         avatar_url: profile.avatar_url || "",
-      });
-      setAvatarUrl(profile.avatar_url || "");
+      };
+      reset(initialData);
+      setPreviewUrl(profile.avatar_url || "");
     }
   }, [profile, open, reset]);
 
   const onSubmit = async (values: ProfileFormValues) => {
     try {
-      const result = await onUpdate(values);
-      if (result) {
-        onClose();
-      }
+      await onUpdate(values);
+      onClose(); // Tutup modal setelah sukses (hook useProfile sudah handle toast)
     } catch (error) {
-      toast.error("Gagal memperbarui profil");
+      // Error sudah dihandle oleh mutation onError, tapi kita jaga-jaga di sini
     }
   };
 
@@ -97,33 +101,33 @@ export const EditProfileForm = ({
       open={open}
       onOpenChange={(val) => !updating && !isUploading && onClose()}
     >
-      <DialogContent className="sm:max-w-lg rounded-[32px] border-none shadow-2xl p-0 overflow-hidden outline-none">
-        {/* Header — fixed, tidak ikut scroll */}
+      <DialogContent className="sm:max-w-lg rounded-[32px] border-none shadow-2xl p-0 overflow-hidden outline-none bg-white">
         <DialogHeader className="px-8 pt-8 pb-6 bg-slate-50/80 backdrop-blur-sm border-b border-slate-100">
           <DialogTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">
             Pengaturan Profil
           </DialogTitle>
-          <DialogDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+          <DialogDescription className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
             Personalisasi Identitas Vangrove Anda
           </DialogDescription>
         </DialogHeader>
 
-        {/* ScrollArea membungkus form — scroll hanya di sini */}
         <ScrollArea className="max-h-[70vh] sm:max-h-[75vh]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="px-8 pb-8 pt-6 space-y-6"
           >
-            {/* Avatar Upload Section */}
             <div className="flex flex-col items-center gap-4 py-2">
               <div className="relative">
                 <Avatar
                   className={cn(
                     "w-28 h-28 border-4 border-white shadow-2xl rounded-[32px] transition-all duration-500",
-                    isUploading && "opacity-50 scale-95",
+                    (isUploading || updating) && "opacity-50 scale-95",
                   )}
                 >
-                  <AvatarImage src={previewUrl} className="object-cover" />
+                  <AvatarImage
+                    src={currentAvatarUrl || previewUrl}
+                    className="object-cover"
+                  />
                   <AvatarFallback className="bg-emerald-50 text-emerald-600 rounded-[32px] font-black text-3xl">
                     {profile?.name?.charAt(0) || <User size={40} />}
                   </AvatarFallback>
@@ -140,10 +144,9 @@ export const EditProfileForm = ({
                     onUploadBegin={() => setIsUploading(true)}
                     onClientUploadComplete={(res) => {
                       const url = res?.[0].url;
-                      setAvatarUrl(url);
-                      setValue("avatar_url", url);
+                      setValue("avatar_url", url, { shouldDirty: true });
                       setIsUploading(false);
-                      toast.success("Foto profil diperbarui");
+                      toast.success("Foto siap disimpan");
                     }}
                     onUploadError={(error: Error) => {
                       setIsUploading(false);
@@ -168,11 +171,10 @@ export const EditProfileForm = ({
                 </div>
               </div>
               <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                Klik kamera untuk unggah foto baru
+                Klik kamera untuk ganti foto
               </p>
             </div>
 
-            {/* Form Fields Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
               {PROFILE_FIELDS.map((field) => (
                 <div key={field.id} className="space-y-1.5">
@@ -188,6 +190,8 @@ export const EditProfileForm = ({
                   <Input
                     {...register(field.id as keyof ProfileFormValues)}
                     id={field.id}
+                    type={field.type === "tel" ? "text" : field.type}
+                    inputMode={field.inputMode}
                     placeholder={field.placeholder}
                     className="rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-emerald-500 transition-all h-11 text-sm font-bold placeholder:text-slate-300"
                     disabled={updating || isUploading}
@@ -201,7 +205,6 @@ export const EditProfileForm = ({
               ))}
             </div>
 
-            {/* Bio Section */}
             <div className="space-y-1.5">
               <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Bio Singkat
@@ -209,12 +212,11 @@ export const EditProfileForm = ({
               <Textarea
                 {...register("bio")}
                 placeholder="Ceritakan sedikit tentang aktivitas pertanian Anda..."
-                className="rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white min-h-[100px] text-sm font-medium resize-none transition-all"
+                className="rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white min-h-[100px] text-sm font-bold resize-none transition-all"
                 disabled={updating || isUploading}
               />
             </div>
 
-            {/* Action Buttons */}
             <div className="flex items-center gap-3 pt-2">
               <Button
                 type="button"
@@ -233,7 +235,7 @@ export const EditProfileForm = ({
                 {updating ? (
                   <>
                     <Loader2 size={16} className="animate-spin mr-2" />
-                    MENYIMPAN
+                    MENYIMPAN...
                   </>
                 ) : (
                   <>

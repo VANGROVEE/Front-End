@@ -1,11 +1,18 @@
+export interface FieldOption {
+  label: string;
+  value: string | number;
+}
+
 export interface FormField {
   id: string;
   label: string;
+
   type:
     | "text"
     | "email"
     | "password"
     | "number"
+    | "tel"
     | "textarea"
     | "select"
     | "date"
@@ -15,8 +22,18 @@ export interface FormField {
   placeholder?: string;
   required?: boolean;
   options?: FieldOption[];
-}
-export interface FieldOption {
-  label: string;
-  value: string | number;
+
+  pattern?: string;
+
+  inputMode?:
+    | "none"
+    | "text"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | "search";
+
+  errorMessage?: string;
 }
