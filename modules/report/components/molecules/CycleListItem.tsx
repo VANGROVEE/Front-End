@@ -38,10 +38,10 @@ export const CycleListItem = ({
     type: "FAILURE_ANALYSIS",
   });
 
-  const { mutate: runAnalysis, isPending: isAnalyzing } = useFailureAnalysis();
-
+  
   const isFailed = cycle.status === "FAILED";
   const isCompleted = ["COMPLETED"].includes(cycle.status);
+  const { mutate: runAnalysis, isPending: isAnalyzing } = useFailureAnalysis();
 
   const handleRunAnalysis = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -120,40 +120,7 @@ export const CycleListItem = ({
           </Badge>
         </div>
 
-        {isFailed && (
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                <Sparkles size={12} className="text-rose-500" />
-                Investigasi Kegagalan AI
-              </p>
-              <Button
-                size="xs"
-                variant="outline"
-                className="h-7 text-[9px] font-bold uppercase border-rose-200 text-rose-600 hover:bg-rose-100"
-                onClick={handleRunAnalysis}
-                disabled={isAnalyzing}
-              >
-                {isAnalyzing ? (
-                  <Loader2 size={10} className="animate-spin mr-1" />
-                ) : null}
-                {cycle.ai_explanation ? "Perbarui Analisis" : "Mulai Analisis"}
-              </Button>
-            </div>
-
-            {cycle.ai_explanation ? (
-              <p className="text-[11px] text-slate-600 italic leading-relaxed">
-                &ldquo;{cycle.ai_explanation}&rdquo;
-              </p>
-            ) : (
-              <p className="text-[10px] text-slate-400 italic">
-                Siklus gagal. Klik tombol di atas untuk menjalankan investigasi
-                dari AI.
-              </p>
-            )}
-          </div>
-        )}
-
+      
         <div className="flex items-center justify-between pt-3 border-t border-slate-50">
           <div className="flex gap-6">
             <div className="space-y-0.5">

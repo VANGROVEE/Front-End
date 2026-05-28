@@ -11,6 +11,7 @@ import { getCycleFormFields } from "../../const/cycle-field";
 import { useLandContext } from "../../context/land-context";
 import { useCommodities } from "../../hooks/commodity-hook";
 import { useLands } from "../../hooks/lands-hook";
+import { PlantingCycle } from "../../types/cycle";
 import { ActivityTimeline } from "../molecules/ActivityTimeline";
 import { CycleListSidebar } from "../molecules/CycleListSidebar";
 import { CycleOverviewCard } from "../molecules/CycleOverviewCard";
@@ -20,9 +21,6 @@ import { OperationsHeader } from "../molecules/OperationsHeader";
 import { FormFarmerLands } from "../organisms/form-lands";
 import { FormActivity } from "../organisms/FormActivity";
 import { FormCycle } from "../organisms/FormCycle";
-
-// 🌟 PERBAIKAN: Ubah import ini ke type lokal operations
-import type { PlantingCycle } from "../../types/cycle";
 
 export const OperationsPage = () => {
   const [selectedLandId, setSelectedLandId] = useState<string>("");
@@ -272,6 +270,7 @@ export const OperationsPage = () => {
         isDeleting={isDeletingCycle}
         itemName={`Siklus ${selectedCycle?.commodity?.name || ""}`}
         title="Laporkan Gagal Panen?"
+        confirmText="Konfirmasi Gagal"
         description="Siklus ini akan dihentikan secara permanen. Data histori tetap dapat diakses untuk evaluasi."
       />
     </div>

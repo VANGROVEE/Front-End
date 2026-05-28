@@ -1,26 +1,24 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
-import { useForm, Controller, useWatch } from "react-hook-form";
-import Webcam from "react-webcam";
 import { format, isBefore, startOfDay } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import {
-  Camera,
-  X,
-  Upload,
   AlertCircle,
-  ChevronsUpDown,
+  Camera,
   Check,
+  ChevronsUpDown,
   Scale,
+  Upload,
+  X,
 } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import Webcam from "react-webcam";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Switch } from "@/components/ui/switch";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Command,
   CommandEmpty,
@@ -29,19 +27,21 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { generateReactHelpers } from "@uploadthing/react";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { toast } from "sonner";
 
-import { MediaPreview } from "../molecules/MediaPreview";
-import { AiInsightCard } from "../molecules/AiInsightCard";
 import { getIconForField } from "../../const/getIcon";
+import { AiInsightCard } from "../molecules/AiInsightCard";
+import { MediaPreview } from "../molecules/MediaPreview";
 
 const { uploadFiles } = generateReactHelpers<OurFileRouter>();
 
@@ -234,13 +234,17 @@ export const FormActivity = ({
                           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-30" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border-slate-100 overflow-hidden">
-                        <Command>
+                      <PopoverContent
+                        className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
+                        onOpenAutoFocus={(e) => e.preventDefault()} 
+                      >
+                        <Command className="w-full">
                           <CommandInput
                             placeholder="Cari..."
                             className="h-11 font-medium"
                           />
-                          <CommandList className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                          {/* Gunakan max-h di sini dan pastikan overflow terlihat */}
+                          <CommandList className="max-h-[350px] overflow-y-auto overflow-x-hidden p-1 custom-scrollbar">
                             <CommandEmpty className="py-6 text-xs text-slate-400 font-bold uppercase text-center">
                               Tidak ditemukan
                             </CommandEmpty>
@@ -248,6 +252,7 @@ export const FormActivity = ({
                               {field.options?.map((opt: any) => (
                                 <CommandItem
                                   key={opt.value}
+                                  value={opt.label}
                                   onSelect={() => {
                                     onChange(opt.value.toString());
                                     setOpenCombobox((p) => ({
@@ -255,7 +260,7 @@ export const FormActivity = ({
                                       [field.id]: false,
                                     }));
                                   }}
-                                  className="cursor-pointer py-3 px-4 rounded-xl mb-1 aria-selected:bg-emerald-50 aria-selected:text-emerald-700"
+                                  className="cursor-pointer py-3 px-4 rounded-xl mb-1 flex items-center"
                                 >
                                   <Check
                                     className={cn(

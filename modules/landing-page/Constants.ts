@@ -1,13 +1,9 @@
-// ── Navigation ────────────────────────────────────────────────────────────────
-
 export const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: "ti-layout-dashboard" },
   { key: "tanaman", label: "Tanaman", icon: "ti-plant-2", badge: 24 },
   { key: "lokasi", label: "Lokasi", icon: "ti-map-pin" },
   { key: "laporan", label: "Laporan", icon: "ti-chart-bar" },
 ];
-
-// ── Plant Form ────────────────────────────────────────────────────────────────
 
 export const PLANT_TYPES = [
   { key: "tomat", label: "tomat", icon: "ti-apple" },
@@ -34,8 +30,6 @@ export const INITIAL_FORM = {
   fotoPreview: null,
 };
 
-// ── Map ───────────────────────────────────────────────────────────────────────
-
 export const PINS = [
   { cx: 145, cy: 90, color: "#1D9E75", delay: "0s" },
   { cx: 230, cy: 88, color: "#1D9E75", delay: "0.6s" },
@@ -43,8 +37,6 @@ export const PINS = [
   { cx: 270, cy: 97, color: "#378ADD", delay: "1.4s" },
   { cx: 108, cy: 95, color: "#1D9E75", delay: "1.8s" },
 ];
-
-// ── Recent Entries ────────────────────────────────────────────────────────────
 
 export const DEFAULT_ENTRIES = [
   { nama: "Mangga Gedong Gincu", lokasi: "Indramayu, Jabar", jenis: "buah" },
@@ -64,8 +56,6 @@ export const DOT_STYLE = {
   herbal: "bg-[#ef9f27]",
   sayuran: "bg-[#378add]",
 };
-
-// ── Dashboard ─────────────────────────────────────────────────────────────────
 
 export const INITIAL_STATS = {
   totalTanaman: 24,

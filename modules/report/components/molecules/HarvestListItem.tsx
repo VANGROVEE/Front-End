@@ -4,7 +4,7 @@ import { HarvestHistory } from "../../types/harvest";
 
 export interface HarvestListItemProps {
   report: HarvestHistory;
-  formatDate: (date: string) => string; // 🌟 PERBAIKAN: Ubah void menjadi string
+  formatDate: (date: string) => string;
 }
 export const HarvestListItem = ({
   report,

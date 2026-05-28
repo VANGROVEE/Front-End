@@ -18,11 +18,10 @@ export const DetailDropdown = ({
   isFailed,
   cycleData,
 }: DetailDropdownProps) => {
-  const { useDaily, useHistory } = useAiRecommendation({
+  const { useHistory } = useAiRecommendation({
     cycle_id: cycleId,
     type: "FAILURE_ANALYSIS",
   });
-  const { data: aiDaily, isLoading: isAiLoadingDaily } = useDaily();
   const { data: aiHistory, isLoading: isAiLoadingHistory } = useHistory();
 
   const { cycleSummary, isLoading: isSummaryLoading } = useCycles(
@@ -34,7 +33,6 @@ export const DetailDropdown = ({
 
     const failureAnalysis = Array.isArray(aiHistory) ? aiHistory[0] : aiHistory;
 
-
     return (
       <div className="border-t border-slate-100 bg-white px-6 py-8 animate-in fade-in slide-in-from-top-2 duration-500">
         <CycleFailureContent
@@ -45,15 +43,11 @@ export const DetailDropdown = ({
     );
   }
 
-  if (isSummaryLoading || isAiLoadingDaily) return <DetailSkeleton />;
   if (!cycleSummary) return null;
 
   return (
     <div className="border-t border-slate-100 bg-white px-6 py-8 animate-in fade-in slide-in-from-top-2 duration-500">
-      <CycleSummaryContent
-        data={cycleSummary}
-        aiResponse={aiDaily?.ai_response}
-      />
+      <CycleSummaryContent data={cycleSummary} />
     </div>
   );
 };

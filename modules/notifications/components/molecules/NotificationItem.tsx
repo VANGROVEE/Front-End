@@ -1,26 +1,23 @@
 "use client";
 
-import React from "react";
-import {
-  X,
-  Bot,
-  Sprout,
-  CloudRain,
-  CalendarDays,
-  CheckCircle,
-  AlertTriangle,
-  AlertCircle,
-  Info,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
+import {
+  AlertCircle,
+  AlertTriangle,
+  Bot,
+  CalendarDays,
+  CheckCircle,
+  CloudRain,
+  Info,
+  Sprout,
+  X,
+} from "lucide-react";
 
-// SHADCN COMPONENTS
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-// Pastikan interface ini diimport atau didefinisikan dengan benar
 export interface Notification {
   id: string;
   title: string;

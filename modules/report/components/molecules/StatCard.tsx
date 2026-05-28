@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 
 export type StatColor = "emerald" | "blue" | "amber";
 
-// 2. Buat interface untuk Props komponen
 export interface StatCardProps {
   icon: React.ReactNode;
   label: string;

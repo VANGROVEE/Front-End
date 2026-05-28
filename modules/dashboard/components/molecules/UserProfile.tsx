@@ -1,24 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  LogOut,
-  ChevronDown,
-  Mail,
-  Phone,
-  MapPin,
-  User,
-  Settings,
-} from "lucide-react";
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useAuthStore } from "@/common/stores/use-auth-store";
+import { createClient } from "@/lib/supabase/client";
 import { useProfile } from "@/modules/profile/components/hooks/use-profile";
 import { EditProfileForm } from "@/modules/profile/components/molecules/editProfilForm";
-import { NotificationDropdown } from "@/modules/dashboard/components/molecules/NotificationDropdown";
-import { createClient } from "@/lib/supabase/client";
+import { ChevronDown, LogOut, Mail, MapPin, Phone, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useState } from "react";
 
-// 🌟 SHADCN COMPONENTS
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,9 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export const UserProfile = () => {
   const { user, logout } = useAuthStore();
@@ -52,13 +41,13 @@ export const UserProfile = () => {
     await supabase.auth.signOut();
     localStorage.removeItem("vangrove-profile-cache");
     logout();
-    router.push("/");
+    router.push("/auth");
   };
 
   return (
     <>
       <div className="flex items-center gap-3 sm:gap-4">
-        <NotificationDropdown />
+        {/* <NotificationDropdown /> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

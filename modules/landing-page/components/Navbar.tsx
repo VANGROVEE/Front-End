@@ -1,19 +1,19 @@
 "use client";
 
-import React from "react";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import {
-  Leaf,
-  Search,
-  LayoutDashboard,
   Cpu,
+  LayoutDashboard,
+  Leaf,
   LogIn,
+  Search,
   UserCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
 
 export default function Navbar() {
   const { user } = useAuthStore();
+  
 
   return (
     <nav className="fixed w-full z-[100] top-0 bg-white/70 backdrop-blur-xl border-b border-slate-200/50">
@@ -40,7 +40,7 @@ export default function Navbar() {
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors"
             size={18}
           />
-          <input
+          <input  
             type="text"
             placeholder="Cari penyakit, komoditas..."
             className="w-full bg-slate-100/50 border border-transparent rounded-2xl pl-12 pr-4 py-2.5 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-green-100 focus:border-green-200 transition-all duration-300 outline-none placeholder:text-slate-400"

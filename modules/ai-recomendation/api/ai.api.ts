@@ -1,7 +1,5 @@
 import { api } from "@/lib/axios/api";
 
-// -- Types ----------------------------------------------------
-
 export interface AiRecommendation {
   cycle_id: string;
   cycle_cycle_id: string;
@@ -19,7 +17,7 @@ export interface AiRecommendation {
       alasan: string;
     };
     pesan_petani: string;
-    // Fields untuk Failure Analysis
+
     analisis_kegagalan?: string;
     faktor_dominan?: string;
     skor_kelalaian_manusia?: number;

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Leaf, Scale } from "lucide-react";
 
-export const CycleSummaryContent = ({ data, aiResponse }: any) => (
+export const CycleSummaryContent = ({ data }: any) => (
   <div className="space-y-7">
     <section className="flex items-start justify-between">
       <div className="space-y-1">

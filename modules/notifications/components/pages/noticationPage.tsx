@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import { Bell, CheckCheck, Trash2, Settings2, Loader2 } from "lucide-react";
-import { useNotification } from "@/modules/notifications/hooks/use-notification";
 import { cn } from "@/lib/utils";
+import { useNotification } from "@/modules/notifications/hooks/use-notification";
+import { Bell, CheckCheck, Loader2, Settings2, Trash2 } from "lucide-react";
+import { useState, useTransition } from "react";
 
-// SHADCN COMPONENTS
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// ATOMS / MOLECULES
 import { NotificationEmptyState } from "../molecules/NotificationEmptyState";
 import { NotificationItem } from "../molecules/NotificationItem";
 
@@ -20,19 +18,18 @@ type FilterType = "all" | "unread" | "read";
 
 export const NotificationPage = () => {
   const [filter, setFilter] = useState<FilterType>("all");
-  const [isPending, startTransition] = useTransition(); // Untuk UX yang lebih smooth saat filter
+  const [isPending, startTransition] = useTransition();
 
   const {
     notifications,
     unreadCount,
-    isLoading, // Pastikan hook useNotification mengirimkan status loading
+    isLoading,
     markAsRead,
     markAllAsRead,
     deleteNotification,
     deleteAll,
   } = useNotification();
 
-  // Optimasi filter dengan useTransition agar UI tidak freeze jika data banyak
   const filteredNotifications = notifications.filter((n) => {
     if (filter === "unread") return !n.isRead;
     if (filter === "read") return n.isRead;

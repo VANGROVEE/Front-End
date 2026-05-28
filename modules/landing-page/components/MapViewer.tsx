@@ -1,4 +1,3 @@
-// modules/landing-page/components/MapViewer.tsx
 "use client";
 
 import L from "leaflet";

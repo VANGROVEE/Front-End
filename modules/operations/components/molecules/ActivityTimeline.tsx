@@ -153,7 +153,7 @@ export const ActivityTimeline = ({
             <EmptyState message="Belum ada aktivitas harian yang dicatat." />
           </div>
         ) : (
-          <ScrollArea className="flex-1 w-full h-[500px] pr-3">
+          <ScrollArea className="flex-1 w-full h-[420px] pr-3">
             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-100 before:to-transparent">
               {activities.map((activity, index) => {
                 const currentDate = new Date(

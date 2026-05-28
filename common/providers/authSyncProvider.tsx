@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import { createClient } from "@/lib/supabase/client";
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import type { Session } from "@supabase/supabase-js";
+import { useEffect } from "react";
 
 export const AuthSyncProvider = ({
   children,
@@ -13,23 +14,42 @@ export const AuthSyncProvider = ({
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const handleSession = (supabaseSession: Session | null) => {
+      if (!supabaseSession) return;
+
+      const formattedPayload = {
+        session: {
+          access_token: supabaseSession.access_token,
+          expires_at: supabaseSession.expires_at || 0,
+        },
+        user: supabaseSession.user as any,
+      };
+
+      setAuth(formattedPayload);
+    };
+
+    const initSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
-        setAuth(session, true);
+        handleSession(session);
       }
-    });
+    };
+
+    initSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        setAuth(session, true);
-      } else {
+        handleSession(session);
       }
+     
     });
 
     return () => subscription.unsubscribe();
-  }, [setAuth, supabase.auth]);
+  }, [setAuth, supabase]);
 
   return <>{children}</>;
 };

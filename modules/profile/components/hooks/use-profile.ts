@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import { extractErrorMessage } from "@/common/utils/error";
 import {
   profileApi,

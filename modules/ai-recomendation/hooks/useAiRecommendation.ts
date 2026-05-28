@@ -1,34 +1,44 @@
 import { extractErrorMessage } from "@/common/utils/error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "next/dist/server/api-utils";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { aiRecommendationApi } from "../api/ai.api";
+
+export const AI_RECO_KEYS = {
+  all: ["ai-recommendations"] as const,
+  history: (cycle_id?: string) =>
+    [...AI_RECO_KEYS.all, "history", cycle_id] as const,
+  daily: (cycle_id?: string) =>
+    [...AI_RECO_KEYS.all, "daily", cycle_id] as const,
+  failure: (cycle_id?: string) =>
+    [...AI_RECO_KEYS.all, "failure", cycle_id] as const,
+};
 
 export const useAiRecommendation = ({
   cycle_id,
   type,
 }: {
   cycle_id?: string;
-  type: string;
+  type?: string;
 }) => {
   const queryClient = useQueryClient();
 
   const useHistory = () => {
     return useQuery({
-      queryKey: ["ai-recommendations", "history", cycle_id],
-      queryFn: () => aiRecommendationApi.findAllByCycle(cycle_id!, type),
-      enabled: !!cycle_id,
-      staleTime: 1000 * 60 * 5,
+      queryKey: AI_RECO_KEYS.history(cycle_id),
+      queryFn: () => aiRecommendationApi.findAllByCycle(cycle_id!, type!),
+      enabled: !!cycle_id && !!type,
+      staleTime: 1000 * 60 * 15,
     });
   };
 
   const useDaily = () => {
     const query = useQuery({
-      queryKey: ["ai-recommendations", "daily", cycle_id],
+      queryKey: AI_RECO_KEYS.daily(cycle_id),
       queryFn: () => aiRecommendationApi.getDaily(cycle_id!),
       enabled: !!cycle_id,
       retry: false,
+      staleTime: 1000 * 60 * 5,
     });
 
     useEffect(() => {
@@ -44,16 +54,21 @@ export const useAiRecommendation = ({
 
   const useFailureAnalysis = () => {
     return useMutation({
-      mutationFn: (cycle_id: string) =>
-        aiRecommendationApi.getFailureAnalysis(cycle_id),
-      onSuccess: () => {
+      mutationFn: (target_cycle_id: string) =>
+        aiRecommendationApi.getFailureAnalysis(target_cycle_id),
+      onSuccess: (_, target_cycle_id) => {
         toast.success("Analisis kegagalan berhasil diperbarui");
 
         queryClient.invalidateQueries({
-          queryKey: ["ai-recommendations", "history", cycle_id],
+          queryKey: AI_RECO_KEYS.history(target_cycle_id),
+        });
+
+        queryClient.invalidateQueries({ queryKey: ["harvest-reports"] });
+        queryClient.invalidateQueries({
+          queryKey: ["planting-cycles", "detail", target_cycle_id],
         });
       },
-      onError: (error: ApiError) => {
+      onError: (error: any) => {
         toast.error(extractErrorMessage(error, "Gagal memproses analisis AI"));
       },
     });

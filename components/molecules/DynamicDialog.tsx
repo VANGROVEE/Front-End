@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Loader2, Save, X } from "lucide-react";
+import React from "react";
 
 interface DynamicFormDialogProps {
   isOpen: boolean;
@@ -85,21 +85,23 @@ export function DynamicFormDialog({
             type="submit"
             form={formId}
             disabled={isLoading}
-            className="h-12 w-full rounded-2xl bg-green-600 px-8 text-white font-bold shadow-lg shadow-green-200 transition-all hover:bg-green-700 active:scale-[0.98] sm:w-auto"
+            className="h-12 w-full sm:w-fit rounded-2xl bg-green-600 px-10 text-white font-bold shadow-lg shadow-green-200 transition-all hover:bg-green-700 hover:shadow-green-300 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
-              <div className="flex items-center">
-                <Loader2 size={18} className="mr-2 animate-spin" />
-                <span>Memproses...</span>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <Save size={18} className="mr-2" />
-                <span>
-                  {isEditMode ? "Simpan Perubahan" : "Tambahkan Lahan"}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-center gap-2">
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span className="tracking-wide">Memproses...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  <span className="tracking-wide">
+                    {isEditMode ? "Simpan Perubahan" : "Konfirmasi & Simpan"}
+                  </span>
+                </>
+              )}
+            </div>
           </Button>
         </DialogFooter>
       </DialogContent>
