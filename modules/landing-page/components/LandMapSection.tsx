@@ -125,7 +125,7 @@ export default function LandMapSection() {
                 },
                 {
                   title: "Neural Disease Detection",
-                  desc: "Insight Gemini AI langsung dari deteksi citra multispektral.",
+                  desc: "Insight  AI langsung dari deteksi citra multispektral.",
                   icon: Zap,
                 },
               ].map((item, i) => (

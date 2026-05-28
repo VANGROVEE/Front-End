@@ -3,7 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnalyticsGrid } from "@/modules/dashboard/components/molecules/AnalyticsGrid";
 import { Dashboard3D } from "@/modules/dashboard/components/molecules/dashboard3D";
-import { useSpatialAnalysis } from "@/modules/dashboard/hooks/useSpatial";
+import { useAnalysis } from "@/modules/dashboard/hooks/useAnalyze";
 import { motion, Variants } from "framer-motion";
 import { AiHealthAssistant } from "../molecules/AiHealthAssistant";
 
@@ -31,7 +31,7 @@ const itemVariants: Variants = {
 };
 
 export default function DashboardPage() {
-  const { isLoading } = useSpatialAnalysis();
+  const { isLoading } = useAnalysis();
 
   return (
     <motion.main
@@ -42,7 +42,6 @@ export default function DashboardPage() {
     >
       {/* Grid Utama */}
       <div className="grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
-        {/* LEFT SECTION: MAP (9 COLS) */}
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-10">
           <motion.section variants={itemVariants} className="flex-1">
             <div className="relative h-full rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-white/80 overflow-hidden bg-white group transition-all duration-500 hover:shadow-[0_50px_120px_-20px_rgba(16,185,129,0.15)]">
@@ -55,18 +54,15 @@ export default function DashboardPage() {
           </motion.section>
         </div>
 
-        {/* RIGHT SECTION: AI ASSISTANT (3 COLS) - Satu Row dengan Map */}
         <motion.aside
           variants={itemVariants}
           className="col-span-12 lg:col-span-3"
         >
-          {/* Hapus props reports & isLoading karena hooks sudah ada di dalam AiHealthAssistant */}
           <div className="h-full rounded-[3rem] shadow-2xl shadow-emerald-900/5 overflow-hidden bg-transparent">
             <AiHealthAssistant />
           </div>
         </motion.aside>
 
-        {/* BOTTOM SECTION: ANALYTICS (Full Width di bawah Row Map) */}
         <motion.section variants={itemVariants} className="col-span-12">
           <div className="rounded-[3rem] bg-white/30 backdrop-blur-sm border border-white/50 p-2 transition-all">
             <AnalyticsGrid />

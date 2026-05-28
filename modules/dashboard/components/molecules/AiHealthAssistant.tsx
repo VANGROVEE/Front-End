@@ -20,12 +20,12 @@ import {
   Tag,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useSpatialAnalysis } from "../../hooks/useSpatial";
+import { useAnalysis } from "../../hooks/useAnalyze";
 import { HealthReport, LandHealthGroup } from "../../types/analyze.type";
 import { HealthTaskItem } from "./HealthTaskItem";
 
 export const AiHealthAssistant = () => {
-  const { reports: data, isLoading } = useSpatialAnalysis();
+  const { reports: data, isLoading } = useAnalysis();
   const [selectedLand, setSelectedLand] = useState<string>("all");
 
   const landGroups = (data as unknown as LandHealthGroup[]) || [];
