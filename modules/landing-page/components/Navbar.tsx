@@ -26,6 +26,8 @@ export default function Navbar() {
           <div className="relative">
             <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-green-200/50 group-hover:rotate-6 transition-transform duration-300">
               <Leaf size={22} fill="currentColor" />
+
+              {/* ketika diklik ke root arahkan */}
             </div>
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 border-2 border-white rounded-full animate-pulse" />
           </div>

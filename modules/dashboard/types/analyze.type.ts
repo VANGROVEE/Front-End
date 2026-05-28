@@ -49,12 +49,12 @@ export interface GeminiInsight {
 export interface HealthReport {
   id: string;
   confidence_score: number;
-  gemini_insight: GeminiInsight; // Sudah tidak 'any' lagi
+  gemini_insight: GeminiInsight;
   is_outbreak_trigger: boolean;
   created_at: string;
   cycle: {
     id?: string;
-    commodity_name: string; // Sesuai mapping backend terbaru
+    commodity_name: string;
     start_date: string;
   };
   disease?: {
@@ -62,8 +62,36 @@ export interface HealthReport {
   } | null;
 }
 
-// Interface tambahan untuk struktur data yang sudah dikelompokkan per Lahan
 export interface LandHealthGroup {
   land_name: string;
   reports: HealthReport[];
+}
+
+export interface TrendCommidity {
+  name: string;
+  value: number;
+}
+
+export interface TrendDisease {
+  rank: string;
+  name: string;
+  cases: number;
+  riskLevel: string;
+}
+
+export interface AiTaskRecommendation {
+  id: string;
+  priority: "URGENT" | "NORMAL" | "ROUTINE";
+  task: string;
+  description: string;
+  location: string;
+  type: string;
+  date: Date | string;
+}
+
+export interface AiResponseContent {
+  task_title: string;
+  priority: "URGENT" | "NORMAL" | "ROUTINE";
+  action_steps: string;
+  reasoning?: string;
 }

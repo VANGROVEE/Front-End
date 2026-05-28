@@ -7,8 +7,6 @@ import {
   Droplets,
   Leaf,
   MapPin,
-  Maximize2,
-  Navigation2,
   RefreshCcw,
   ThermometerSun,
   Wind,
@@ -27,7 +25,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-import { useSpatialAnalysis } from "../../hooks/useSpatial";
+import { useAnalysis } from "../../hooks/useAnalyze";
 import { DashboardError } from "./DashboardError";
 import { DashboardSkeleton } from "./DashboardSkeleton";
 import { StatCard } from "./StatCard";
@@ -45,11 +43,9 @@ export const Dashboard3D = () => {
     isError,
     refetch,
     isFetching,
-  } = useSpatialAnalysis();
+  } = useAnalysis();
 
-  const [activeCoords, setActiveCoords] = React.useState<
-    [number, number] | null
-  >(null);
+  const [activeLandId, setActiveLandId] = React.useState<string | null>(null);
 
   const plugin = React.useMemo(
     () =>
@@ -62,13 +58,16 @@ export const Dashboard3D = () => {
   );
 
   React.useEffect(() => {
-    if (lands?.length > 0 && !activeCoords) setActiveCoords(lands[0].position);
-  }, [lands, activeCoords]);
+    if (lands?.length > 0 && !activeLandId) {
+      setActiveLandId(lands[0].id);
+    }
+  }, [lands, activeLandId]);
 
   if (isLoading) return <DashboardSkeleton />;
   if (isError) return <DashboardError onRetry={() => refetch()} />;
 
-  const mainLand = lands[0];
+  const activeLand = lands.find((l: any) => l.id === activeLandId) || lands[0];
+
   const weatherConfig = ((cond: string = "") => {
     const d = cond.toLowerCase();
     if (d.includes("hujan"))
@@ -76,12 +75,11 @@ export const Dashboard3D = () => {
     if (d.includes("awan") || d.includes("mendung"))
       return { icon: <CloudSun size={24} />, color: "blue" as const };
     return { icon: <ThermometerSun size={24} />, color: "orange" as const };
-  })(mainLand?.weather?.condition || "");
+  })(activeLand?.weather?.condition || "");
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 bg-[#f8fafc] min-h-screen font-sans">
-      {/* HEADER SECTION */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2 md:px-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Badge className="bg-emerald-500 hover:bg-emerald-600 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 border-none shadow-sm">
@@ -99,44 +97,39 @@ export const Dashboard3D = () => {
         <Button
           onClick={() => refetch()}
           disabled={isFetching}
-          className="rounded-full h-14 px-8 bg-slate-900 text-white font-bold gap-3 shadow-2xl hover:scale-105 transition-all active:scale-95"
+          className="rounded-full w-full md:w-auto h-14 px-8 bg-slate-900 text-white font-bold gap-3 shadow-2xl hover:scale-105 transition-all active:scale-95"
         >
           <RefreshCcw className={cn(isFetching && "animate-spin")} size={18} />
           Sync Satellite
         </Button>
       </header>
 
-      {/* VIEWPORT AREA */}
-      <Card className="relative h-[75vh] md:h-[80vh] w-full rounded-[4rem] overflow-hidden border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.12)] bg-white ring-1 ring-slate-200/50">
-        {/* LAYER 1: MAP ENGINE */}
-        <div className="absolute inset-0 z-0">
-          <MapViewer
-            centerPosition={activeCoords || mainLand?.position}
-            farmLands={lands}
-          />
+      <Card className="relative flex flex-col md:block h-auto md:h-[80vh] w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.12)] bg-slate-50 md:bg-white ring-1 ring-slate-200/50">
+        <div className="relative h-[45vh] md:h-auto shrink-0 md:absolute md:inset-0 z-0">
+          <MapViewer centerPosition={activeLand?.position} farmLands={lands} />
         </div>
 
-        {/* LAYER 2: INTERFACE OVERLAY */}
-        <div className="absolute inset-0 z-10 pointer-events-none p-8 md:p-10 flex flex-col justify-between">
-          {/* TOP SECTION */}
-          <div className="flex justify-between items-start w-full">
-            {/* LEFT COLUMN: AMBIENCE & LIST LANDS (SINKRON GLASS TEMA) */}
-            <div className="flex flex-col gap-4 max-w-[280px] w-full">
-              {/* AMBIENCE CARD */}
-              <Card className="pointer-events-auto bg-white/40 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.5rem] p-5">
-                <div className="flex items-center gap-5">
-                  <div className="bg-orange-500 p-4 rounded-[1.8rem] text-white shadow-xl shadow-orange-500/30">
-                    <ThermometerSun size={28} strokeWidth={2.5} />
+        <div className="relative z-10 flex flex-col p-4 gap-4 md:absolute md:inset-0 md:pointer-events-none md:p-8 md:justify-between md:gap-0">
+          <div className="flex flex-col md:flex-row justify-between items-start w-full gap-4">
+            <div className="flex flex-col gap-3 md:gap-4 w-full md:max-w-[280px] order-2 md:order-1">
+              <Card className="pointer-events-auto bg-white md:bg-white/60 backdrop-blur-none md:backdrop-blur-2xl border border-slate-100 md:border-white/50 shadow-xl md:shadow-2xl rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-5">
+                <div className="flex items-center gap-4 md:gap-5">
+                  <div className="bg-orange-500 p-3 md:p-4 rounded-2xl md:rounded-[1.8rem] text-white shadow-xl shadow-orange-500/30">
+                    <ThermometerSun
+                      size={24}
+                      strokeWidth={2.5}
+                      className="md:w-7 md:h-7"
+                    />
                   </div>
                   <div>
                     <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mb-1 leading-none">
                       Ambient Temp
                     </p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-slate-900 tracking-tighter">
-                        {mainLand?.weather?.temp?.toFixed(0) ?? "--"}°
+                      <span className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">
+                        {activeLand?.weather?.temp?.toFixed(0) ?? "--"}°
                       </span>
-                      <span className="text-xl font-bold text-slate-400">
+                      <span className="text-lg md:text-xl font-bold text-slate-400">
                         C
                       </span>
                     </div>
@@ -144,9 +137,8 @@ export const Dashboard3D = () => {
                 </div>
               </Card>
 
-              {/* LAND LIST PANEL (SUDAH TERANG & SINKRON) */}
-              <Card className="pointer-events-auto flex flex-col bg-white/40 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.5rem] p-5 max-h-[300px]">
-                <div className="flex items-center justify-between mb-4 px-1">
+              <Card className="pointer-events-auto flex flex-col bg-white md:bg-white/60 backdrop-blur-none md:backdrop-blur-2xl border border-slate-100 md:border-white/50 shadow-xl md:shadow-2xl rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-5 max-h-[220px] md:max-h-[300px]">
+                <div className="flex items-center justify-between mb-3 md:mb-4 px-1">
                   <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 leading-none">
                     <MapPin size={14} className="text-emerald-600" /> Aset
                     Terdaftar
@@ -158,18 +150,16 @@ export const Dashboard3D = () => {
                 <ScrollArea className="flex-1 pr-2">
                   <div className="space-y-2">
                     {lands.map((land: any) => {
-                      const isActive =
-                        activeCoords?.[0] === land.position[0] &&
-                        activeCoords?.[1] === land.position[1];
+                      const isActive = activeLandId === land.id;
                       return (
                         <button
                           key={land.id}
-                          onClick={() => setActiveCoords(land.position)}
+                          onClick={() => setActiveLandId(land.id)}
                           className={cn(
                             "w-full p-3 rounded-2xl flex items-center justify-between transition-all group border",
                             isActive
                               ? "bg-emerald-500 border-emerald-400 shadow-lg shadow-emerald-500/20"
-                              : "bg-white/40 border-transparent hover:bg-white/60 hover:border-white",
+                              : "bg-slate-50 md:bg-white/40 border-transparent hover:bg-slate-100 md:hover:bg-white/80 md:hover:border-white",
                           )}
                         >
                           <div className="text-left overflow-hidden">
@@ -189,7 +179,7 @@ export const Dashboard3D = () => {
                                   : "text-slate-400",
                               )}
                             >
-                              Papupa Sector
+                              {land.address || "Area"}
                             </p>
                           </div>
                           <span
@@ -207,71 +197,55 @@ export const Dashboard3D = () => {
                 </ScrollArea>
               </Card>
             </div>
-
-            {/* RIGHT COLUMN: QUICK ACTIONS */}
-            <div className="flex flex-col gap-4">
-              <Button
-                size="icon"
-                className="pointer-events-auto w-14 h-14 rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 text-slate-800 shadow-2xl hover:bg-white transition-all active:scale-90"
-              >
-                <Maximize2 size={22} />
-              </Button>
-              <Button
-                size="icon"
-                onClick={() => mainLand && setActiveCoords(mainLand.position)}
-                className="pointer-events-auto w-14 h-14 rounded-3xl bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 hover:scale-110 transition-all active:scale-95"
-              >
-                <Navigation2 size={22} fill="currentColor" />
-              </Button>
-            </div>
           </div>
 
-          {/* BOTTOM SECTION: AUTO CAROUSEL */}
-          <div className="pointer-events-auto w-full max-w-6xl mx-auto px-4 mb-2 translate-y-2">
+          <div className="pointer-events-auto w-full max-w-6xl mx-auto md:px-4 mb-2 mt-2 md:mt-4">
             <Carousel
               plugins={[plugin]}
               className="w-full"
               opts={{ loop: true, align: "start" }}
             >
-              <CarouselContent className="-ml-4 md:-ml-6">
-                <CarouselItem className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3">
+              <CarouselContent className="-ml-3 md:-ml-6">
+                <CarouselItem className="pl-3 md:pl-6 basis-[85%] md:basis-1/2 lg:basis-1/3">
                   <StatCard
                     icon={<Droplets size={24} />}
                     label="Kelembapan Tanah"
-                    value={`${summary?.avg_moisture ?? 0}%`}
+                    value={`${activeLand?.sensor_data?.soil_moisture ?? 0}%`}
                     status={
-                      (summary?.critical_lands ?? 0) > 0 ? "Waspada" : "Optimal"
+                      activeLand?.health_status === "KRITIS"
+                        ? "Waspada"
+                        : "Optimal"
                     }
                     color="blue"
-                    isAlert={(summary?.critical_lands ?? 0) > 0}
+                    isAlert={activeLand?.health_status === "KRITIS"}
                   />
                 </CarouselItem>
-                <CarouselItem className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3">
+                <CarouselItem className="pl-3 md:pl-6 basis-[85%] md:basis-1/2 lg:basis-1/3">
                   <StatCard
                     icon={weatherConfig.icon}
-                    label="Atmosfer Radar"
-                    value={mainLand?.weather?.condition || "Cerah"}
+                    label="Cuaca Sektor"
+                    value={activeLand?.weather?.condition || "Cerah"}
                     status="Live"
                     color={weatherConfig.color}
                   />
                 </CarouselItem>
-                <CarouselItem className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3">
+                <CarouselItem className="pl-3 md:pl-6 basis-[85%] md:basis-1/2 lg:basis-1/3">
                   <StatCard
                     icon={<Leaf size={24} />}
-                    label="Komoditas Utama"
+                    label="Komoditas Lahan"
                     value={
-                      summary?.active_commodities?.[0]?.split(" ").pop() ||
-                      "Alba"
+                      activeLand?.current_commodity?.split(" ").pop() ||
+                      "Kosong"
                     }
                     status="Sehat"
                     color="emerald"
                   />
                 </CarouselItem>
-                <CarouselItem className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3">
+                <CarouselItem className="pl-3 md:pl-6 basis-[85%] md:basis-1/2 lg:basis-1/3">
                   <StatCard
                     icon={<Wind size={24} />}
                     label="Laju Angin"
-                    value={`${mainLand?.weather?.wind_speed ?? 0} m/s`}
+                    value={`${activeLand?.weather?.wind_speed ?? 0} m/s`}
                     status="Normal"
                     color="blue"
                   />
