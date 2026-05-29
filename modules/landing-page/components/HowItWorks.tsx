@@ -1,5 +1,4 @@
-import React from "react";
-import { Upload, Search, CheckCircle, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle, Search, Upload } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
@@ -27,7 +26,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 px-6 bg-white">
+    <section className="py-12 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -76,16 +75,6 @@ export default function HowItWorks() {
         </div>
 
         {/* Bottom Call to Action */}
-        <div className="mt-16 text-center">
-          <div className="inline-block p-1 rounded-2xl bg-slate-50 border border-slate-100">
-            <p className="px-6 py-3 text-slate-500 text-sm">
-              Sudah siap meningkatkan hasil panen Anda?
-              <button className="ml-2 font-bold text-slate-900 underline underline-offset-4 hover:text-green-600">
-                Coba Demo Sekarang
-              </button>
-            </p>
-          </div>
-        </div>
       </div>
     </section>
   );
