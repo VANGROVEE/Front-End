@@ -1,12 +1,24 @@
-import { Leaf } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-export const Logo = () => (
-  <div className="flex items-center gap-2">
-    <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-green-200">
-      <Leaf size={18} fill="currentColor" />
+export const Logo = ({ className }: { className?: string }) => {
+  return (
+    <div className={cn("flex items-center gap-2 select-none group", className)}>
+      <div className="relative w-9 h-9 shrink-0 transition-transform duration-500 group-hover:rotate-[15deg]">
+        <Image
+          src="/img/logo.png"
+          alt="Vangrove Logo"
+          fill
+          priority
+          sizes="36px"
+          className="object-contain"
+        />
+      </div>
+
+      {/* Teks Branding */}
+      <span className="font-black text-xl tracking-tighter text-slate-900 uppercase">
+        Van<span className="text-emerald-600">grove</span>
+      </span>
     </div>
-    <span className="font-black tracking-tighter text-slate-900 uppercase">
-      Van<span className="text-green-600">grove</span>
-    </span>
-  </div>
-);
+  );
+};

@@ -40,7 +40,6 @@ export default function DashboardPage() {
       variants={containerVariants}
       className="p-4 md:p-10 max-w-[1700px] mx-auto min-h-screen bg-[#f8fafc]/50"
     >
-      {/* Grid Utama */}
       <div className="grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-10">
           <motion.section variants={itemVariants} className="flex-1">
@@ -58,7 +57,7 @@ export default function DashboardPage() {
           variants={itemVariants}
           className="col-span-12 lg:col-span-3"
         >
-          <div className="h-full rounded-[3rem] shadow-2xl shadow-emerald-900/5 overflow-hidden bg-transparent">
+          <div className="rounded-[3rem] shadow-2xl shadow-emerald-900/5 overflow-hidden bg-transparent">
             <AiHealthAssistant />
           </div>
         </motion.aside>
