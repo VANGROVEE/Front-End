@@ -1,149 +1,197 @@
-import { SocialButton } from "@/common/icons/SocialLink";
+"use client";
+
 import { Globe, Mail, Phone } from "lucide-react";
+
+// Import Komponen Shadcn UI resmi
+import { SocialButton } from "@/common/icons/SocialLink";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function Footer() {
   const developers = [
-    { name: "Aulia", role: "Back End" },
-    { name: "Surya", role: "Front End" },
-    { name: "Akhdan", role: "Ai Engineer" },
-    { name: "Albert", role: "Ai Engineer" },
-    { name: "Mike", role: "Data Science" },
-    { name: "Putri", role: "Data Science" },
+    { name: "Akhdaan", role: "AI Engineer", initial: "MA" },
+    { name: "Albert", role: "AI Engineer", initial: "NA" },
+    { name: "Putri", role: "Data Scientist", initial: "PP" },
+    { name: "Mike", role: "Data Scientist", initial: "MV" },
+    { name: "Aulia", role: "Full-Stack Dev", initial: "YA" },
+    { name: "Rizal", role: "Full-Stack Dev", initial: "RS" },
   ];
 
   return (
-    <footer className="py-20 px-6 bg-[#FCFDF8] border-t border-slate-100 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-[100px] -z-10 opacity-60" />
+    <footer className="relative overflow-hidden border-t border-slate-100 bg-[#FCFDF8] px-6 py-16 md:py-24">
+      {/* Glow Ornamen untuk Vibe Modern */}
+      <div className="pointer-events-none absolute -right-24 -top-24 -z-10 h-96 w-96 rounded-full bg-emerald-50 blur-[120px] opacity-70" />
+      <div className="pointer-events-none absolute -left-24 bottom-0 -z-10 h-80 w-80 rounded-full bg-green-50 blur-[100px] opacity-50" />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-12 gap-12 text-sm relative z-10">
-        <div className="col-span-2 md:col-span-4 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
-              <img
-                src="/img/logo.png"
-                alt="Vangrove Logo"
-                className="w-12 h-12 object-contain"
-              />
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+          {/* BRANDING SECTION */}
+          <div className="col-span-1 space-y-6 md:col-span-4">
+            <div className="flex items-center gap-3 select-none">
+              {/* Parent wajib relative dan memegang ukuran w-12 h-12 */}
+              <div className="relative w-12 h-12 shrink-0">
+                <Image
+                  src="/img/logo.png"
+                  alt="Vangrove Logo"
+                  fill
+                  sizes="48px" // Optimasi performa Next.js untuk gambar ukuran 12 (48px)
+                  priority // Mengutamakan loading logo agar tidak terkena efek layout shift (CLS)
+                  className="object-contain"
+                />
+              </div>
+
               <span className="font-black text-2xl tracking-tighter text-slate-950">
                 VANGROVE
               </span>
             </div>
+            <p className="max-w-sm text-base font-medium leading-relaxed text-slate-500">
+              Membangun masa depan pertanian melalui kecerdasan spasial dan
+              diagnosis AI presisi tinggi.{" "}
+              <span className="text-emerald-600 font-semibold">
+                Empowering farmers, digitally.
+              </span>
+            </p>
+
+            {/* PERBAIKAN: Menggunakan Shadcn Button untuk Link Sosial Media */}
+            <div className="flex gap-3">
+              <SocialButton
+                href="https://github.com/vangrove"
+                platform="github"
+              />
+              <SocialButton
+                href="https://linkedin.com/company/vangrove"
+                platform="linkedin"
+              />
+              <a
+                href="#"
+                className="p-2.5 bg-white border border-slate-200 rounded-xl hover:text-green-600 hover:border-green-200 transition-all flex items-center justify-center shadow-sm"
+              >
+                <Globe size={20} />
+              </a>
+            </div>
           </div>
-          <p className="text-slate-500 leading-relaxed max-w-sm text-base font-medium">
-            Growing the future, diagnosing today. Ekosistem Agritech modern yang
-            memberdayakan petani dengan teknologi AI presisi.
-          </p>
-          <div className="flex gap-3">
-            <SocialButton
-              href="https://github.com/vangrove"
-              platform="github"
-            />
-            <SocialButton
-              href="https://linkedin.com/company/vangrove"
-              platform="linkedin"
-            />
+
+          {/* QUICK LINKS */}
+          <div className="col-span-1 space-y-6 md:col-span-2">
+            <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+              Ekosistem
+            </h5>
+            <ul className="space-y-4 font-bold text-slate-600">
+              <li>
+                <a
+                  href="#"
+                  className="hover:text-emerald-600 transition-colors"
+                >
+                  Monitoring
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="hover:text-emerald-600 transition-colors"
+                >
+                  Diagnosis AI
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="hover:text-emerald-600 transition-colors"
+                >
+                  Sensus Lahan
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* DEVELOPER TEAM GRID */}
+          <div className="col-span-1 space-y-6 md:col-span-4">
+            <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+              Core Contributors
+            </h5>
+            <div className="grid grid-cols-2 gap-4">
+              {developers.map((dev, idx) => (
+                <div key={idx} className="group flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white text-[10px] font-black text-emerald-600 shadow-sm transition-transform group-hover:scale-110">
+                    {dev.initial}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-black text-slate-800 group-hover:text-emerald-600 transition-colors">
+                      {dev.name}
+                    </p>
+                    <p className="text-[9px] font-bold uppercase tracking-tighter text-slate-400">
+                      {dev.role}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CONTACT INFO */}
+          <div className="col-span-1 space-y-6 md:col-span-2">
+            <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+              Hubungi
+            </h5>
+            <div className="space-y-4">
+              <a
+                href="mailto:info@vangrove.ai"
+                className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-colors group"
+              >
+                <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <Mail size={14} />
+                </div>
+                <span className="text-xs font-black italic">Support</span>
+              </a>
+              <div className="flex items-center gap-3 text-slate-600">
+                <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600">
+                  <Phone size={14} />
+                </div>
+                <span className="text-xs font-black tracking-tighter">
+                  +62-811-2233
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Separator className="my-12 bg-slate-100" />
+
+        {/* BOTTOM BAR */}
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="flex items-center gap-3">
+            <Badge
+              variant="outline"
+              className="rounded-full border-emerald-100 bg-emerald-50/50 text-[10px] font-black text-emerald-700"
+            >
+              STABLE v2.4
+            </Badge>
+            <p className="text-[12px] font-bold text-slate-400">
+              © 2026 <span className="text-slate-900">VANGROVE</span>{" "}
+              Spatio-Temporal Intelligence.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-6 text-[11px] font-black text-slate-400">
             <a
               href="#"
-              className="p-2.5 bg-white border border-slate-200 rounded-xl hover:text-green-600 hover:border-green-200 transition-all flex items-center justify-center shadow-sm"
+              className="hover:text-slate-900 uppercase tracking-widest"
             >
-              <Globe size={20} />
+              Privacy
             </a>
-          </div>
-        </div>
-
-        <div className="col-span-1 md:col-span-2 space-y-6">
-          <h5 className="font-bold text-slate-900 uppercase tracking-widest text-[11px] border-b border-slate-100 pb-2">
-            Aplikasi
-          </h5>
-          <ul className="space-y-3 font-semibold text-slate-500">
-            <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
-                Monitoring Lahan
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
-                Diagnosis AI
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
-                Pustaka Penyakit
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="col-span-2 md:col-span-4 space-y-6">
-          <h5 className="font-bold text-slate-900 uppercase tracking-widest text-[11px] border-b border-slate-100 pb-2">
-            Tim Pengembang
-          </h5>
-          <div className="grid grid-cols-2 gap-y-5 gap-x-4">
-            {developers.map((dev, idx) => (
-              <div key={idx} className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 shadow-sm flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50">
-                  <span className="text-[10px] font-black text-green-600/50 uppercase">
-                    {dev.name.substring(0, 2)}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800 leading-none mb-1 group-hover:text-green-600 transition-colors">
-                    {dev.name}
-                  </p>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
-                    {dev.role}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="col-span-1 md:col-span-2 space-y-6">
-          <h5 className="font-bold text-slate-900 uppercase tracking-widest text-[11px] border-b border-slate-100 pb-2">
-            Hubungi Kami
-          </h5>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-slate-500 group cursor-pointer hover:text-green-600 transition-colors">
-              <div className="p-2 bg-green-50 rounded-lg text-green-600">
-                <Mail size={16} />
-              </div>
-              <span className="font-bold text-[13px]">info@vangrove.ai</span>
+            <a
+              href="#"
+              className="hover:text-slate-900 uppercase tracking-widest"
+            >
+              Terms
+            </a>
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 shadow-sm">
+              <span className="text-slate-400">Engineered with</span>
+              <span className="text-slate-900">Bun</span>
+              <div className="h-1 w-1 rounded-full bg-slate-300" />
+              <span className="text-slate-900">Next.js</span>
             </div>
-            <div className="flex items-center gap-3 text-slate-500 group cursor-pointer hover:text-green-600 transition-colors">
-              <div className="p-2 bg-green-50 rounded-lg text-green-600">
-                <Phone size={16} />
-              </div>
-              <span className="font-bold text-[13px]">+62 812 3456</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <p className="text-[13px] font-semibold text-slate-400">
-            © 2026 <span className="text-slate-900">VANGROVE</span> Org.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap justify-center items-center gap-6 text-[12px] font-bold text-slate-400">
-          <a
-            href="#"
-            className="hover:text-slate-900 transition-colors underline decoration-slate-200 underline-offset-4"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="#"
-            className="hover:text-slate-900 transition-colors underline decoration-slate-200 underline-offset-4"
-          >
-            Terms of Service
-          </a>
-          <div className="flex items-center gap-2 bg-slate-100 px-4 py-1.5 rounded-full border border-slate-200 text-slate-500">
-            Build with <span className="text-slate-900">Next.js</span> &{" "}
-            <span className="text-orange-600">Bun</span>
           </div>
         </div>
       </div>

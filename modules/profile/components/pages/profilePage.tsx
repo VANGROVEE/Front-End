@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import { useProfile } from "@/modules/profile/components/hooks/use-profile";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

@@ -21,6 +21,7 @@ export const PROFILE_FIELDS: FormField[] = [
     type: "number",
     placeholder: "Contoh: 081234567890",
     required: false,
+    pattern: "[0-9]*",
   },
   {
     id: "address_home",

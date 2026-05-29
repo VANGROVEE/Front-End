@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import { api } from "@/lib/axios/api";
 import { Land } from "@/modules/operations/types/lands";
 

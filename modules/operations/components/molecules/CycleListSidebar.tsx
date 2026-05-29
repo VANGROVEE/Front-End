@@ -1,32 +1,31 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import {
-  Search,
+  ActivitySquare,
+  AlertCircle,
   Calendar,
   ChevronRight,
-  Sprout,
-  AlertCircle,
-  ActivitySquare,
   Filter,
+  Search,
+  Sprout,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { formatDate } from "../../utils/formatDate";
+import React, { useMemo, useState } from "react";
 import { PlantingCycle } from "../../types/cycle";
+import { formatDate } from "../../utils/formatDate";
 
-import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { Badge } from "@/components/ui/badge";
 import {
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 
 interface CycleListSidebarProps {
   cycles: PlantingCycle[] | any[];
@@ -142,8 +141,8 @@ export const CycleListSidebar: React.FC<CycleListSidebarProps> = ({
           </div>
         </CardHeader>
 
-        <CardContent className="p-4 sm:p-6 pt-0 flex-1 relative z-10 overflow-hidden flex flex-col min-h-0">
-          <ScrollArea className="flex-1 w-full -mr-4 pr-4">
+        <CardContent className="p-4 sm:p-6 pt-0 relative z-10 overflow-hidden">
+          <ScrollArea className="w-full h-[620px] -mr-4 pr-4">
             <div className="flex flex-col gap-2.5 sm:gap-3 pb-6">
               {filteredCycles.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center py-12 px-4 border-2 border-dashed border-slate-100 rounded-[20px] sm:rounded-[24px] bg-slate-50/50">

@@ -1,25 +1,21 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { useForm, Controller } from "react-hook-form";
 import {
-  Sprout,
-  Settings2,
-  Tag,
-  ChevronsUpDown,
-  Check,
   Calendar as CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  Settings2,
+  Sprout,
+  Tag,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { FormField } from "@/common/types/form-field";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -28,10 +24,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { FormField } from "@/common/types/form-field";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 
 export interface CycleFormData {
   commodity_id: string;
@@ -53,7 +53,6 @@ interface FormCycleProps {
 const getIconForField = (fieldId: string) => {
   const props = {
     size: 18,
-
     className:
       "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10 transition-colors group-focus-within:text-green-600",
   };
@@ -185,10 +184,12 @@ export const FormCycle = ({
                               placeholder={`Cari ${field.label}...`}
                               className="h-11"
                             />
-                            <CommandList>
+
+                            <CommandList className="max-h-[250px] overflow-y-auto overflow-x-hidden">
                               <CommandEmpty>
                                 Tidak ada data ditemukan.
                               </CommandEmpty>
+
                               <CommandGroup>
                                 {field.options?.map((opt) => {
                                   if (opt.value === "") return null;

@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
+
 import { AuthSyncProvider } from "@/common/providers/authSyncProvider";
 import QueryProvider from "@/common/providers/queryProvider";
 import { Toaster } from "@/components/ui/sonner";
-import type { Metadata } from "next";
 import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthListener } from "@/components/molecules/AuthListener";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -37,7 +39,10 @@ export default function RootLayout({
       <body className={`min-h-full flex flex-col ${jakartaSans.className}`}>
         <Toaster />
         <AuthSyncProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <AuthListener />
+            {children}
+          </QueryProvider>
         </AuthSyncProvider>
       </body>
     </html>

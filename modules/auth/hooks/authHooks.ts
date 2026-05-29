@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
+import { useAuthStore } from "@/common/stores/use-auth-store";
 import { extractErrorMessage } from "@/common/utils/error";
 import { createClient } from "@/lib/supabase/client";
 import { authApi } from "@/modules/auth/api/authApi";
@@ -16,15 +16,18 @@ export const useAuth = () => {
 
   const loginMutation = useMutation({
     mutationFn: (values: LoginValue) => authApi.login(values),
-    onSuccess: (response, values) => {
-      if (response.session) {
-        setAuth(response.session, !!values.remember);
+    onSuccess: async (response, values) => {
+      if (response.session && response.user) {
+        setAuth(response);
+
         toast.success("Selamat datang kembali!");
-        router.push("/dashboard");
+
+        router.refresh();
+
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       }
-    },
-    onError: (error) => {
-      toast.error(extractErrorMessage(error, "Login gagal"));
     },
   });
 
@@ -47,12 +50,14 @@ export const useAuth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${origin}/auth/callback`,
+          redirectTo: `${origin}/auth/callback?next=/dashboard`,
         },
       });
+
       if (error) throw error;
     },
   });
+
   return {
     handleLogin: loginMutation.mutate,
     isLoginLoading: loginMutation.isPending,

@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthStore } from "@/common/icons/stores/use-auth-store";
-import { Cpu, LayoutDashboard, LogIn, UserCircle } from "lucide-react";
+import { useAuthStore } from "@/common/stores/use-auth-store";
+import { Cpu, LayoutDashboard, LogIn, Search, UserCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function Navbar() {
@@ -13,19 +13,39 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 shrink-0 group cursor-pointer"
+          className="flex items-center gap-3 shrink-0 group cursor-pointer select-none"
         >
           <div className="flex items-center gap-2">
-            <img
-              src="/img/logo.png"
-              alt="Vangrove Logo"
-              className="w-10 h-10 object-contain"
-            />
-            <span className="font-black tracking-tighter text-slate-900 uppercase">
+            {/* Parent div dengan ukuran tetap untuk membungkus Image fill */}
+            <div className="relative w-10 h-10 overflow-hidden transition-transform group-hover:rotate-6">
+              <Image
+                src="/img/logo.png"
+                alt="Vangrove Logo"
+                fill
+                priority // Logo navbar wajib priority untuk SEO & User Experience
+                sizes="40px"
+                className="object-contain"
+              />
+            </div>
+
+            <span className="font-black text-xl tracking-tighter text-slate-900 uppercase">
               Van<span className="text-green-600">grove</span>
             </span>
           </div>
         </Link>
+
+        {/* Search Bar */}
+        <div className="hidden lg:flex relative flex-1 max-w-md group">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-600 transition-colors"
+            size={18}
+          />
+          <input
+            type="text"
+            placeholder="Cari penyakit, komoditas..."
+            className="w-full bg-slate-100/50 border border-transparent rounded-2xl pl-12 pr-4 py-2.5 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-green-100 focus:border-green-200 transition-all duration-300 outline-none placeholder:text-slate-400"
+          />
+        </div>
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-2 md:gap-8">

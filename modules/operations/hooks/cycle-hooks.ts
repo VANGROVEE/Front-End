@@ -12,6 +12,7 @@ export const useCycles = (cycleId?: string, landId?: string) => {
 
   const HEATMAP_KEY = "cycles-heatmap-calendar";
   const CYCLES_KEY = "cycles";
+  const SUMMARY_KEY = "cycle-summary";
   const LANDS_KEY = "lands";
   const LAND_DETAIL_KEY = "land-detail";
 
@@ -23,13 +24,20 @@ export const useCycles = (cycleId?: string, landId?: string) => {
   const heatmapCalendarQuery = useQuery({
     queryKey: [HEATMAP_KEY, cycleId],
     queryFn: () => cycleApi.getHeatmapCalendar(cycleId),
-    enabled: true,
+    enabled: !!cycleId,
   });
 
   const cycleDetailQuery = useQuery({
     queryKey: [CYCLES_KEY, cycleId],
     queryFn: () => cycleApi.findById(cycleId as string),
     enabled: !!cycleId,
+  });
+
+  const cycleSummaryQuery = useQuery({
+    queryKey: [SUMMARY_KEY, cycleId],
+    queryFn: () => cycleApi.getSummary(cycleId as string),
+    enabled: !!cycleId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const refreshAllData = async (
@@ -46,6 +54,9 @@ export const useCycles = (cycleId?: string, landId?: string) => {
       promises.push(
         queryClient.invalidateQueries({
           queryKey: [CYCLES_KEY, targetCycleId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [SUMMARY_KEY, targetCycleId],
         }),
       );
     }
@@ -68,7 +79,7 @@ export const useCycles = (cycleId?: string, landId?: string) => {
       toast.success("Siklus tanam berhasil ditambahkan");
     },
     onError: (error) => {
-      toast.error(extractErrorMessage(error, "Gagal menghapus siklus"));
+      toast.error(extractErrorMessage(error, "Gagal menambahkan siklus"));
     },
   });
 
@@ -96,15 +107,19 @@ export const useCycles = (cycleId?: string, landId?: string) => {
       toast.success("Siklus tanam berhasil dihapus");
     },
     onError: (error) => {
-      toast.error(extractErrorMessage(error, "Gagal memperbarui siklus tanam"));
+      toast.error(extractErrorMessage(error, "Gagal menghapus siklus tanam"));
     },
   });
 
   return {
     cycles: cyclesQuery.data,
     cycleDetail: cycleDetailQuery.data,
+    cycleSummary: cycleSummaryQuery.data,
     heatmapCalendar: heatmapCalendarQuery.data,
-    isLoading: cyclesQuery.isLoading || cycleDetailQuery.isLoading,
+    isLoading:
+      cyclesQuery.isLoading ||
+      cycleDetailQuery.isLoading ||
+      cycleSummaryQuery.isLoading,
     isSubmitting: createMutation.isPending || updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
     handleCreate: (v: CreatePlantingCycleDto) => createMutation.mutateAsync(v),
