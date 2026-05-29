@@ -1,12 +1,10 @@
 "use client";
 
 import { FileBarChart, LayoutDashboard, Menu, Monitor } from "lucide-react";
-import { FileBarChart, LayoutDashboard, Menu, Monitor } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/molecules/logo";
-import { Button } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -16,8 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { UserProfile } from "../molecules/UserProfile";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { UserProfile } from "../molecules/UserProfile";
 
 export const TopNavbar = () => {
