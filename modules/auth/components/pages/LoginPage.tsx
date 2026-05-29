@@ -13,10 +13,12 @@ export default function LoginPage() {
           <div className="absolute top-1/3 -left-20 w-72 h-72 bg-green-700 rounded-full opacity-40" />
         </div>
 
-        <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-            <Leaf size={22} className="text-green-600" />
-          </div>
+        <div className="flex items-center gap-1.5">
+          <img
+            src="/img/logo.png"
+            alt="Vangrove Logo"
+            className="w-7 h-7 md:w-10 md:h-10 object-contain flex-shrink-0"
+          />
           <span className="text-2xl font-extrabold tracking-tight text-white uppercase">
             VANGROVE
           </span>

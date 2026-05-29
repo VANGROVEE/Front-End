@@ -13,10 +13,12 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(22,163,74,0.15),transparent_60%)]" />
         </div>
 
-        <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center shadow-lg">
-            <Leaf size={22} className="text-white" />
-          </div>
+        <div className="flex items-center gap-1.5">
+          <img
+            src="/img/logo.png"
+            alt="Vangrove Logo"
+            className="w-7 h-7 md:w-10 md:h-10 object-contain flex-shrink-0"
+          />
           <span className="text-2xl font-extrabold tracking-tight text-white uppercase">
             VANGROVE
           </span>
