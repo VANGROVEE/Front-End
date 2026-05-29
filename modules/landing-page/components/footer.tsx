@@ -1,6 +1,5 @@
-import React from "react";
-import { Leaf, Mail, Phone, Globe } from "lucide-react";
 import { SocialButton } from "@/common/icons/SocialLink";
+import { Globe, Mail, Phone } from "lucide-react";
 
 export default function Footer() {
   const developers = [
@@ -19,12 +18,16 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-12 gap-12 text-sm relative z-10">
         <div className="col-span-2 md:col-span-4 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-green-200/50 transform hover:rotate-6 transition-transform">
-              <Leaf size={26} fill="currentColor" />
+            <div className="flex items-center gap-3">
+              <img
+                src="/img/logo.png"
+                alt="Vangrove Logo"
+                className="w-12 h-12 object-contain"
+              />
+              <span className="font-black text-2xl tracking-tighter text-slate-950">
+                VANGROVE
+              </span>
             </div>
-            <span className="font-black text-2xl tracking-tighter text-slate-950">
-              VANGROVE
-            </span>
           </div>
           <p className="text-slate-500 leading-relaxed max-w-sm text-base font-medium">
             Growing the future, diagnosing today. Ekosistem Agritech modern yang

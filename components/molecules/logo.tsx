@@ -1,12 +1,16 @@
-import { Leaf } from "lucide-react";
+import Link from "next/link";
 
 export const Logo = () => (
-  <div className="flex items-center gap-2">
-    <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-green-200">
-      <Leaf size={18} fill="currentColor" />
+  <Link href="/">
+    <div className="flex items-center gap-1.5">
+      <img
+        src="/img/logo.png"
+        alt="Vangrove Logo"
+        className="w-7 h-7 md:w-10 md:h-10 object-contain flex-shrink-0"
+      />
+      <span className="font-black tracking-tighter text-slate-900 uppercase text-sm md:text-base">
+        Van<span className="text-green-600">grove</span>
+      </span>
     </div>
-    <span className="font-black tracking-tighter text-slate-900 uppercase">
-      Van<span className="text-green-600">grove</span>
-    </span>
-  </div>
+  </Link>
 );

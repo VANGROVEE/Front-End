@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
+import { FileBarChart, LayoutDashboard, Menu, Monitor } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, Monitor, FileBarChart } from "lucide-react";
+import { useState } from "react";
 
 import { Logo } from "@/components/molecules/logo";
-import { UserProfile } from "../molecules/UserProfile";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -15,10 +14,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { UserProfile } from "../molecules/UserProfile";
 
 export const TopNavbar = () => {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false); // ← tambah state
 
   const navItems = [
     {
@@ -43,7 +44,9 @@ export const TopNavbar = () => {
       <div className="flex items-center gap-4 md:gap-10">
         {/* MOBILE MENU (SHEET) */}
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
+            {" "}
+            {/* ← tambah open & onOpenChange */}
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-xl">
                 <Menu size={20} className="text-slate-600" />
@@ -65,6 +68,7 @@ export const TopNavbar = () => {
                     <Link
                       key={item.label}
                       href={item.href}
+                      onClick={() => setOpen(false)} // ← tutup saat diklik
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all",
                         isActive

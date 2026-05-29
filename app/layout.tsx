@@ -1,10 +1,9 @@
-import type { Metadata } from "next";
-
-import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import QueryProvider from "@/common/providers/queryProvider";
 import { AuthSyncProvider } from "@/common/providers/authSyncProvider";
+import QueryProvider from "@/common/providers/queryProvider";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -19,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Vangrove App",
   description: "Mangrove Agri-tech Monitoring System",
+  icons: {
+    icon: "/img/logo.png",
+    apple: "/img/logo.png",
+  },
 };
 
 export default function RootLayout({

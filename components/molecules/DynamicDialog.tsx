@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Loader2, Save, X } from "lucide-react";
+import React from "react";
 
 interface DynamicFormDialogProps {
   isOpen: boolean;
