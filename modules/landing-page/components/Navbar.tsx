@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/common/stores/use-auth-store";
 import { Cpu, LayoutDashboard, LogIn, Search, UserCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
