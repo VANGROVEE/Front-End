@@ -24,7 +24,7 @@ export const analyzeApi = {
     return response.data.data;
   },
   getDiseaseTrend: async (): Promise<TrendDisease[]> => {
-    const response = await api.get(`${prefix}/planting-trend`);
+    const response = await api.get(`${prefix}/diase-reports`);
     return response.data.data;
   },
 

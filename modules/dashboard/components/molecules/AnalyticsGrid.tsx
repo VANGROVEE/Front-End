@@ -78,7 +78,6 @@ export const AnalyticsGrid = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6  items-stretch">
-      {/* CARD 1: SENSUS KOMODITAS */}
       <Card className="rounded-[40px] border border-slate-100 shadow-sm flex flex-col h-[480px]">
         <CardHeader className="pt-8 px-8 pb-2 shrink-0">
           <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.35em] flex items-center gap-2">
@@ -204,7 +203,6 @@ export const AnalyticsGrid = () => {
         </CardContent>
       </Card>
 
-      {/* CARD 2: PERINGKAT PENYAKIT */}
       <Card className="rounded-[40px] border border-slate-100 shadow-sm flex flex-col h-[480px]">
         <CardHeader className="pt-8 px-8 pb-2 shrink-0">
           <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.35em] flex items-center justify-between">
@@ -300,7 +298,6 @@ export const AnalyticsGrid = () => {
         </CardContent>
       </Card>
 
-      {/* CARD 3: AGENDA KERJA AI */}
       <Card className="rounded-[40px] border border-slate-100 shadow-sm flex flex-col h-[480px]">
         <CardHeader className="pt-8 px-8 pb-2 shrink-0">
           <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.35em] flex items-center justify-between">
