@@ -1,10 +1,12 @@
 "use client";
 
 import { FileBarChart, LayoutDashboard, Menu, Monitor } from "lucide-react";
+import { FileBarChart, LayoutDashboard, Menu, Monitor } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/molecules/logo";
+import { Button } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -15,9 +17,12 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { UserProfile } from "../molecules/UserProfile";
+import { cn } from "@/lib/utils";
+import { UserProfile } from "../molecules/UserProfile";
 
 export const TopNavbar = () => {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false); // ← tambah state
 
   const navItems = [
     {
@@ -41,7 +46,9 @@ export const TopNavbar = () => {
     <header className="sticky top-4 z-50 flex items-center justify-between bg-[#FCFDF8]/90 backdrop-blur-md px-4 md:px-8 py-3 rounded-[24px] md:rounded-[32px] border border-slate-100 shadow-sm mx-4 select-none">
       <div className="flex items-center gap-4 md:gap-10">
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
+            {" "}
+            {/* ← tambah open & onOpenChange */}
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -67,6 +74,7 @@ export const TopNavbar = () => {
                     <Link
                       key={item.label}
                       href={item.href}
+                      onClick={() => setOpen(false)} // ← tutup saat diklik
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-[0.98]",
                         isActive

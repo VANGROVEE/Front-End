@@ -1,11 +1,12 @@
 "use client";
 
-import { Globe, Leaf, Mail, Phone } from "lucide-react";
+import { Globe, Mail, Phone } from "lucide-react";
 
 // Import Komponen Shadcn UI resmi
 import { SocialButton } from "@/common/icons/SocialLink";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function Footer() {
   const developers = [
@@ -27,11 +28,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* BRANDING SECTION */}
           <div className="col-span-1 space-y-6 md:col-span-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-200/50 transition-transform hover:rotate-6">
-                <Leaf size={24} fill="currentColor" />
+            <div className="flex items-center gap-3 select-none">
+              {/* Parent wajib relative dan memegang ukuran w-12 h-12 */}
+              <div className="relative w-12 h-12 shrink-0">
+                <Image
+                  src="/img/logo.png"
+                  alt="Vangrove Logo"
+                  fill
+                  sizes="48px" // Optimasi performa Next.js untuk gambar ukuran 12 (48px)
+                  priority // Mengutamakan loading logo agar tidak terkena efek layout shift (CLS)
+                  className="object-contain"
+                />
               </div>
-              <span className="text-2xl font-black tracking-tighter text-slate-900">
+
+              <span className="font-black text-2xl tracking-tighter text-slate-950">
                 VANGROVE
               </span>
             </div>

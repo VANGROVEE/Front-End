@@ -1,42 +1,41 @@
 "use client";
 
-import React from "react";
-import {
-  Sprout,
-  Calendar,
-  CheckCircle2,
-  Leaf,
-  ActivitySquare,
-  Timer,
-  Settings2,
-  Pencil,
-  AlertTriangle,
-  ChevronDown,
-  Lock,
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { EmptyState } from "@/modules/report/components/molecules/EmptyState";
+import {
+  ActivitySquare,
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  Leaf,
+  Lock,
+  Pencil,
+  Settings2,
+  Sprout,
+  Timer,
+} from "lucide-react";
+import { useCycles } from "../../hooks/cycle-hooks";
 import { PlantingCycle } from "../../types/cycle";
 import { formatDate } from "../../utils/formatDate";
-import { cn } from "@/lib/utils";
 import { ActivityHeatmapCard } from "./ActivityHeatmapCard";
-import { useCycles } from "../../hooks/cycle-hooks";
-import { EmptyState } from "@/modules/report/components/molecules/EmptyState";
 
 interface CycleOverviewCardProps {
   cycleId: string;
@@ -102,7 +101,7 @@ export const CycleOverviewCard = ({
               <div className="space-y-1.5 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-xl lg:text-2xl font-black text-slate-800 tracking-tight truncate uppercase">
-                    {cycle?.commodity.name || "Komoditas"}
+                    {cycle?.commodity?.name || "Komoditas"}
                   </h2>
                   {isHarvested && (
                     <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-black text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-lg">

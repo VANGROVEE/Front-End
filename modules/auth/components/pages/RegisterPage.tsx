@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { Leaf } from "lucide-react";
+import { ArrowLeft, Leaf } from "lucide-react";
 import Link from "next/link";
 import { RegisterForm } from "../organisms/registerForm";
 
@@ -66,6 +65,15 @@ export default function RegisterPage() {
 
       <div className="flex-1 flex items-center justify-center px-6 py-12 overflow-y-auto">
         <div className="w-full max-w-md">
+          {/* Tombol Back */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm text-slate-500 hover:text-green-600 transition-colors font-semibold mb-8 w-fit"
+          >
+            <ArrowLeft size={16} />
+            Kembali ke Beranda
+          </Link>
+
           <div className="flex lg:hidden items-center gap-2 mb-10">
             <div className="w-9 h-9 bg-green-600 rounded-xl flex items-center justify-center shadow-lg">
               <Leaf size={20} className="text-white" />
