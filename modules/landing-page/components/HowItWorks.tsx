@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle, Search, Upload } from "lucide-react";
+import { CheckCircle, Search, Upload } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
@@ -64,11 +64,6 @@ export default function HowItWorks() {
                   {step.title}
                 </h4>
                 <p className="text-slate-600 leading-relaxed">{step.desc}</p>
-
-                {/* Mobile/Tab Arrow */}
-                <div className="mt-6 flex items-center gap-2 text-green-600 font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                  Pelajari selengkapnya <ArrowRight size={16} />
-                </div>
               </div>
             </div>
           ))}

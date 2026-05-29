@@ -7,7 +7,7 @@ import { BotMessageSquare, Leaf } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <header className="relative px-6 bg-[#FCFDF8] overflow-hidden min-h-[80vh] flex items-center">
+    <header className="relative pt-32 px-6 bg-[#FCFDF8] overflow-hidden min-h-[80vh] flex items-center">
       <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-green-100/50 rounded-full blur-3xl opacity-60 pointer-events-none" />
       <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[400px] h-[400px] bg-emerald-100/50 rounded-full blur-3xl opacity-40 pointer-events-none" />
 
