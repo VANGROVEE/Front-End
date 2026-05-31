@@ -13,6 +13,7 @@ import {
   ZoomControl,
 } from "react-leaflet";
 
+// --- Custom Icon & Polygon Generator Tetap Sama ---
 const customIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   iconSize: [38, 38],
@@ -20,39 +21,11 @@ const customIcon = new L.Icon({
   popupAnchor: [0, -38],
 });
 
-function MapFocusHandler({ land }: { land: any | null }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (land?.position) {
-      const polyCoords =
-        land.polygon_coords?.length > 0
-          ? land.polygon_coords
-          : generatePolygonFromArea(land.position, land.area_ha);
-
-      if (polyCoords) {
-        const bounds = L.latLngBounds(polyCoords);
-
-        map.flyToBounds(bounds, {
-          padding: [100, 100],
-          duration: 1.5,
-          maxZoom: 16,
-        });
-      } else {
-        map.flyTo(land.position, 15, { duration: 1.5 });
-      }
-    }
-  }, [land, map]);
-
-  return null;
-}
-
 const generatePolygonFromArea = (center: [number, number], areaHa: number) => {
   if (!center || !center[0] || !center[1]) return null;
   const sideInMeters = Math.sqrt(areaHa * 10000);
   const offset = sideInMeters / 111320 / 2;
   const [lat, lng] = center;
-
   return [
     [lat + offset, lng + offset],
     [lat - offset, lng + offset],
@@ -61,31 +34,49 @@ const generatePolygonFromArea = (center: [number, number], areaHa: number) => {
   ] as [number, number][];
 };
 
-export default function MapViewer({ centerPosition, farmLands }: any) {
+function MapFocusHandler({ land }: { land: any | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (land?.position?.[0] && land?.position?.[1]) {
+      map.flyTo(land.position, 15, { duration: 1.5 });
+    }
+  }, [land, map]);
+  return null;
+}
+
+export default function MapViewer({ centerPosition, farmLands = [] }: any) {
+  // Memproses data lahan hanya jika farmLands ada isinya
+  const renderedLands = useMemo(() => {
+    if (!farmLands) return [];
+    return farmLands
+      .filter(
+        (land: any) => land.position && land.position[0] && land.position[1],
+      )
+      .map((land: any) => ({
+        ...land,
+        displayPolygon:
+          land.polygon_coords?.length > 0
+            ? land.polygon_coords
+            : generatePolygonFromArea(land.position, land.area_ha),
+      }));
+  }, [farmLands]);
+
   const activeLand = useMemo(() => {
+    if (!centerPosition || !farmLands) return null;
     return farmLands.find(
       (l: any) =>
-        l.position[0] === centerPosition?.[0] &&
-        l.position[1] === centerPosition?.[1],
+        l.position?.[0] === centerPosition?.[0] &&
+        l.position?.[1] === centerPosition?.[1],
     );
   }, [centerPosition, farmLands]);
 
-  const renderedLands = useMemo(() => {
-    return farmLands.map((land: any) => ({
-      ...land,
-      displayPolygon:
-        land.polygon_coords?.length > 0
-          ? land.polygon_coords
-          : generatePolygonFromArea(land.position, land.area_ha),
-    }));
-  }, [farmLands]);
-
-  if (!farmLands || farmLands.length === 0) return null;
+  // Koordinat default (misal tengah Indonesia) jika tidak ada centerPosition
+  const defaultCenter: [number, number] = [-2.47, 118.08];
 
   return (
     <MapContainer
-      center={centerPosition || [-2.47, 138.08]}
-      zoom={13}
+      center={centerPosition || defaultCenter}
+      zoom={5} // Zoom lebih jauh jika tidak ada koordinat spesifik
       scrollWheelZoom={true}
       zoomControl={false}
       className="w-full h-full z-0 grayscale-[0.2] contrast-[1.1]"
@@ -93,11 +84,12 @@ export default function MapViewer({ centerPosition, farmLands }: any) {
       <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" />
       <ZoomControl position="bottomright" />
 
+      {/* Handler fokus hanya jalan jika ada lahan terpilih */}
       <MapFocusHandler land={activeLand} />
 
+      {/* Render Marker & Polygon hanya jika datanya ada */}
       {renderedLands.map((land: any) => {
         const isCritical = land.health_status === "KRITIS";
-
         return (
           <div key={land.id}>
             {land.displayPolygon && (
@@ -112,21 +104,14 @@ export default function MapViewer({ centerPosition, farmLands }: any) {
                 }}
               />
             )}
-
-            {land.position && (
-              <Marker position={land.position} icon={customIcon}>
-                <Popup className="custom-popup">
-                  <div className="p-2 min-w-[150px] font-sans text-center">
-                    <h4 className="font-black text-slate-800 text-sm">
-                      {land.name}
-                    </h4>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">
-                      {land.area_ha.toLocaleString()} Ha
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            )}
+            <Marker position={land.position} icon={customIcon}>
+              <Popup>
+                <div className="p-2 text-center">
+                  <h4 className="font-bold">{land.name}</h4>
+                  <p className="text-xs">{land.area_ha} Ha</p>
+                </div>
+              </Popup>
+            </Marker>
           </div>
         );
       })}
