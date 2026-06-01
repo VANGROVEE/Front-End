@@ -18,5 +18,10 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+export const googleLoginSchema = z.object({
+  token: z.string(),
+});
+
 export type LoginValue = z.infer<typeof loginSchema>;
 export type RegisterValue = z.infer<typeof registerSchema>;
+export type LoginGoogleValue = z.infer<typeof googleLoginSchema>;

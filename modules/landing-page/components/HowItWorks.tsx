@@ -1,75 +1,107 @@
-import { CheckCircle, Search, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ClipboardCheck, Map, Search, Sprout } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
       id: "01",
-      title: "Ambil Foto",
-      desc: "Ambil foto daun atau bagian tanaman yang terlihat tidak sehat langsung dari kebun Anda.",
-      icon: <Upload className="text-green-600" size={28} />,
-      color: "bg-green-50",
+      title: "Daftarkan Lahan",
+      desc: "Tentukan lokasi dan luas lahan Anda untuk pemantauan yang lebih akurat sesuai kondisi mikro-klimat.",
+      icon: <Map className="text-orange-600" size={24} />,
+      color: "bg-orange-50 dark:bg-orange-950/50",
     },
     {
       id: "02",
-      title: "Analisis AI",
-      desc: "Sistem visi komputer kami akan memindai gejala penyakit dalam hitungan detik.",
-      icon: <Search className="text-blue-600" size={28} />,
-      color: "bg-blue-50",
+      title: "Atur Siklus Tanam",
+      desc: "Pilih komoditas dan tentukan tanggal tanam untuk mendapatkan jadwal perawatan otomatis.",
+      icon: <Sprout className="text-emerald-600" size={24} />,
+      color: "bg-emerald-50 dark:bg-emerald-950/50",
     },
     {
       id: "03",
-      title: "Dapatkan Solusi",
-      desc: "Terima laporan diagnosis lengkap beserta langkah penanganan yang disarankan.",
-      icon: <CheckCircle className="text-emerald-600" size={28} />,
-      color: "bg-emerald-50",
+      title: "Pantau Kesehatan",
+      desc: "Ambil foto tanaman secara berkala. AI kami akan menganalisis jika ada gejala penyakit.",
+      icon: <Search className="text-blue-600" size={24} />,
+      color: "bg-blue-50 dark:bg-blue-950/50",
+    },
+    {
+      id: "04",
+      title: "Aksi & Laporan",
+      desc: "Dapatkan rekomendasi pemupukan dan pestisida berdasarkan fase pertumbuhan tanaman.",
+      icon: <ClipboardCheck className="text-purple-600" size={24} />,
+      color: "bg-purple-50 dark:bg-purple-950/50",
     },
   ];
 
   return (
-    <section className="py-12 px-6 bg-white">
+    <section className="py-20 px-6 bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <h2 className="text-sm font-bold text-green-600 tracking-[0.2em] uppercase mb-3">
-            Proses Sederhana
+          <h2 className="text-sm font-bold text-primary tracking-[0.2em] uppercase mb-3">
+            Alur Kerja Digital
           </h2>
-          <h3 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            Mulai Pantau dalam{" "}
-            <span className="italic text-green-600">3 Langkah.</span>
+          <h3 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+            Kelola Kebun dalam{" "}
+            <span className="italic text-primary">4 Tahap.</span>
           </h3>
+          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+            Dari pemetaan lahan hingga panen, semua terintegrasi dengan
+            kecerdasan buatan untuk hasil maksimal.
+          </p>
         </div>
 
         {/* Steps Grid */}
-        <div className="grid md:grid-cols-3 gap-8 relative">
-          {/* Connector Line (Hanya muncul di Desktop) */}
-          <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 z-0" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          {/* Connector Line (Hanya muncul di Desktop LG) */}
+          <div className="hidden lg:block absolute top-1/4 left-0 w-full h-0.5 bg-border -translate-y-1/2 z-0" />
 
           {steps.map((step, index) => (
-            <div key={index} className="relative z-10 group">
-              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 hover:border-green-200 hover:shadow-2xl hover:shadow-green-100/50 transition-all duration-500 h-full">
-                {/* Icon & Number */}
-                <div className="flex justify-between items-start mb-6">
+            <Card
+              key={index}
+              className="relative z-10 group rounded-[2rem] transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 flex flex-col justify-between"
+            >
+              <div>
+                <CardHeader className="flex flex-row justify-between items-start space-y-0 pb-4">
                   <div
-                    className={`w-16 h-16 ${step.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}
+                    className={`w-12 h-12 ${step.color} rounded-2xl flex items-center justify-center group-hover:rotate-6 transition-transform duration-300`}
                   >
                     {step.icon}
                   </div>
-                  <span className="text-4xl font-black text-slate-100 group-hover:text-green-100 transition-colors">
+                  <span className="text-3xl font-black text-muted/40 group-hover:text-primary/20 transition-colors">
                     {step.id}
                   </span>
-                </div>
+                </CardHeader>
 
-                {/* Content */}
-                <h4 className="text-2xl font-bold text-slate-900 mb-3">
-                  {step.title}
-                </h4>
-                <p className="text-slate-600 leading-relaxed">{step.desc}</p>
+                <CardContent className="space-y-2">
+                  <CardTitle className="text-xl font-bold tracking-tight">
+                    {step.title}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground leading-relaxed text-sm">
+                    {step.desc}
+                  </CardDescription>
+                </CardContent>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
-        {/* Bottom Call to Action */}
+        {/* Bottom CTA */}
+        <div className="mt-16 text-center">
+          <Button
+            size="lg"
+            className="rounded-full font-bold px-8 py-6 text-md shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
+          >
+            Mulai Buat Lahan Pertama
+          </Button>
+        </div>
       </div>
     </section>
   );

@@ -3,8 +3,22 @@
 import { DeleteAlert } from "@/components/molecules/delete-alert";
 import { DynamicFormDialog } from "@/components/molecules/DynamicDialog";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { Loader2, Map, PlusCircle } from "lucide-react";
+import {
+  Loader2,
+  Map,
+  MapPinPlus,
+  Plus,
+  PlusCircle,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { activityFormFields } from "../../const/activity-field";
 import { getCycleFormFields } from "../../const/cycle-field";
@@ -27,6 +41,7 @@ export const OperationsPage = () => {
   const [selectedCycle, setSelectedCycle] = useState<PlantingCycle | null>(
     null,
   );
+  const [showGuide, setShowGuide] = useState(false);
 
   const { lands, isLoadingLands, landDetail, isLoadingDetail } =
     useLands(selectedLandId);
@@ -72,6 +87,18 @@ export const OperationsPage = () => {
   );
 
   useEffect(() => {
+    if (lands && lands.length === 0 && !isLoadingLands) {
+      setShowGuide(true);
+
+      // Auto-close setelah 15 detik untuk memberi waktu membaca
+      const timer = setTimeout(() => {
+        setShowGuide(false);
+      }, 15000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [lands, isLoadingLands]);
+  useEffect(() => {
     if (lands && lands.length > 0) {
       const isStillExists = lands.some((l) => l.id === selectedLandId);
       if (!selectedLandId || !isStillExists) {
@@ -113,10 +140,81 @@ export const OperationsPage = () => {
       </div>
     );
   }
+  const isNoLandAtAll = lands && lands.length === 0;
+  // if (isNoLandAtAll) {
+  //   return (
+  //     <div className="min-h-[80vh] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+  //       <SpotlightCard className="max-w-2xl w-full rounded-[40px] border border-slate-100 bg-white p-10 shadow-xl">
+  //         <div className="flex flex-col items-center text-center gap-6">
+  //           <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center shadow-inner">
+  //             <Map size={40} />
+  //           </div>
+
+  //           <div className="space-y-2">
+  //             <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+  //               Selamat Datang di Vangrove
+  //             </h2>
+  //             <p className="text-slate-500 font-medium">
+  //               Mulailah digitalisasi pertanian Anda dengan 3 langkah mudah:
+  //             </p>
+  //           </div>
+
+  //           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-4">
+  //             {[
+  //               {
+  //                 step: "01",
+  //                 title: "Daftar Lahan",
+  //                 desc: "Masukkan lokasi dan luas lahan Anda.",
+  //               },
+  //               {
+  //                 step: "02",
+  //                 title: "Pilih Komoditas",
+  //                 desc: "Tentukan tanaman yang akan ditanam.",
+  //               },
+  //               {
+  //                 step: "03",
+  //                 title: "Lakukan Aktivitas",
+  //                 desc: "Dapatkan analisis kesehatan tanaman.",
+  //               },
+  //             ].map((item, idx) => (
+  //               <div
+  //                 key={idx}
+  //                 className="p-4 rounded-3xl bg-slate-50 border border-slate-100 text-left"
+  //               >
+  //                 <span className="text-emerald-500 font-black text-xs uppercase tracking-widest">
+  //                   {item.step}
+  //                 </span>
+  //                 <h4 className="font-bold text-slate-800 mt-1">
+  //                   {item.title}
+  //                 </h4>
+  //                 <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+  //                   {item.desc}
+  //                 </p>
+  //               </div>
+  //             ))}
+  //           </div>
+
+  //           <div className="flex flex-col gap-3 w-full mt-6">
+  //             <Button
+  //               onClick={() => openEdit(null)} // Buka form land baru
+  //               className="w-full rounded-2xl bg-emerald-600 h-14 font-black text-lg hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+  //             >
+  //               <PlusCircle className="mr-2" /> Daftarkan Lahan Pertama
+  //             </Button>
+  //             <p className="text-[10px] text-slate-300 font-bold uppercase tracking-[0.2em]">
+  //               Agritech Modern Indonesia
+  //             </p>
+  //           </div>
+  //         </div>
+  //       </SpotlightCard>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-700">
       <OperationsHeader
+        showGuide={showGuide}
         selectedLandId={selectedLandId}
         onLandChange={setSelectedLandId}
       />
@@ -273,6 +371,89 @@ export const OperationsPage = () => {
         confirmText="Konfirmasi Gagal"
         description="Siklus ini akan dihentikan secara permanen. Data histori tetap dapat diakses untuk evaluasi."
       />
+
+      <Dialog open={showGuide} onOpenChange={setShowGuide}>
+        <DialogContent className="sm:max-w-[500px] rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-white">
+          {/* Bagian Header Dialog - Menggunakan background hijau pekat */}
+          <div className="bg-emerald-600 p-8 text-white relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <Map size={100} />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight text-white leading-none">
+                Panduan Vangrove
+              </DialogTitle>
+              <DialogDescription className="text-emerald-100 font-medium text-xs mt-1 leading-relaxed opacity-90">
+                Langkah cerdas untuk mendigitalisasi dan mengoptimalkan hasil
+                pertanian Anda.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          {/* Bagian Konten Langkah-Langkah */}
+          <div className="p-8 space-y-6">
+            <div className="grid gap-5">
+              {[
+                {
+                  step: "01",
+                  t: "Registrasi Lahan",
+                  d: "Klik ikon peta untuk mendaftarkan koordinat & luas lahan Anda.",
+                  icon: <MapPinPlus className="text-emerald-600" size={14} />,
+                  label: "Tambah Lahan",
+                },
+                {
+                  step: "02",
+                  t: "Mulai Siklus",
+                  d: "Gunakan tombol siklus untuk memilih komoditas dan target panen.",
+                  icon: <Plus className="text-blue-600" size={14} />,
+                  label: "Siklus Baru",
+                },
+                {
+                  step: "03",
+                  t: "Catat Aktivitas",
+                  d: "Laporkan progres harian dan gunakan AI untuk cek kesehatan daun.",
+                  icon: <Sparkles className="text-amber-500" size={14} />,
+                  label: "Aktivitas",
+                },
+              ].map((step, i) => (
+                <div key={i} className="flex gap-4 items-start group">
+                  {/* Nomor Langkah */}
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-[10px] border border-emerald-100">
+                    {step.step}
+                  </span>
+
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-slate-800 text-sm leading-none">
+                        {step.t}
+                      </h4>
+                      {/* Badge Petunjuk Visual Ikon */}
+                      <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg">
+                        {step.icon}
+                        <span className="text-[9px] font-black uppercase tracking-tighter text-slate-500">
+                          {step.label}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      {step.d}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer Auto-close */}
+            <div className="pt-4 border-t border-slate-50 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-300">
+              <span>Vangrove — Agritech</span>
+              <span className="flex items-center gap-2">
+                Auto-close{" "}
+                <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
+              </span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

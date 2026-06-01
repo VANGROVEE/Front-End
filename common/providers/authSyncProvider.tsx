@@ -2,54 +2,42 @@
 
 import { useAuthStore } from "@/common/stores/use-auth-store";
 import { createClient } from "@/lib/supabase/client";
-import type { Session } from "@supabase/supabase-js";
 import { useEffect } from "react";
+
+// providers/AuthSyncProvider.tsx
 
 export const AuthSyncProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const { setAuth } = useAuthStore();
+  const { refreshMe } = useAuthStore();
   const supabase = createClient();
 
   useEffect(() => {
-    const handleSession = (supabaseSession: Session | null) => {
-      if (!supabaseSession) return;
-
-      const formattedPayload = {
-        session: {
-          access_token: supabaseSession.access_token,
-          expires_at: supabaseSession.expires_at || 0,
-        },
-        user: supabaseSession.user as any,
-      };
-
-      setAuth(formattedPayload);
-    };
-
+    // 1. Jalankan sinkronisasi saat pertama kali aplikasi dimuat (Hydration)
     const initSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        handleSession(session);
-      }
+      await refreshMe();
     };
 
     initSession();
 
+    // 2. Listener Supabase tetap perlu untuk menangani event SIGNED_OUT
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        handleSession(session);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        // Alih-alih setAuth manual, panggil refreshMe agar data yang dipakai adalah data PRISMA
+        await refreshMe();
       }
-     
+
+      if (event === "SIGNED_OUT") {
+        useAuthStore.getState().logout();
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [setAuth, supabase]);
+  }, [refreshMe, supabase]);
 
   return <>{children}</>;
 };

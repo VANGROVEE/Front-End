@@ -38,11 +38,22 @@ export const UserProfile = () => {
   const initial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    localStorage.removeItem("vangrove-profile-cache");
-    logout();
-    router.push("/auth");
+    try {
+      const supabase = createClient();
+
+      await supabase.auth.signOut();
+
+      localStorage.removeItem("vangrove-profile-cache");
+
+      logout();
+
+      window.location.href = "/auth";
+    } catch (error) {
+      console.error("Error saat logout:", error);
+
+      logout();
+      window.location.href = "/auth";
+    }
   };
 
   return (

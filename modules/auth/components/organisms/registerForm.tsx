@@ -1,21 +1,21 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { DynamicForm } from "@/components/molecules/DynamicForm";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { registerFormFields } from "../../const/regiterFiled";
 import { useAuth } from "../../hooks/authHooks";
 import { registerSchema, RegisterValue } from "../../schemas/auth.schema";
-import { DynamicForm } from "@/components/molecules/DynamicForm";
-import { registerFormFields } from "../../const/regiterFiled";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 export const RegisterForm = () => {
   const {
     handleRegister,
     isRegisterLoading,
-    registerError,
-    handleOauth,
+    loginWithGoogle,
     isOauthLoading,
+    errors,
   } = useAuth();
 
   const form = useForm<RegisterValue>({
@@ -36,9 +36,9 @@ export const RegisterForm = () => {
 
   return (
     <div className="space-y-6">
-      {registerError && (
+      {errors.register && (
         <div className="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-in fade-in zoom-in">
-          {registerError}
+          {errors.register}
         </div>
       )}
 
@@ -75,7 +75,7 @@ export const RegisterForm = () => {
       <Button
         type="button"
         variant="outline"
-        onClick={() => handleOauth()}
+        onClick={() => loginWithGoogle()}
         disabled={isRegisterLoading || isOauthLoading}
         className="w-full h-14 bg-white border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
       >

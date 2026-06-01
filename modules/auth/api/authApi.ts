@@ -11,4 +11,14 @@ export const authApi = {
     const response = await api.post(prefix + "/register", payload);
     return response.data.data;
   },
+
+  googleLogin: async (payload: { idToken: string }) => {
+    const response = await api.post(prefix + "/google", payload);
+    return response.data.data;
+  },
+
+  getMe: async () => {
+    const response = await api.get(prefix + "/me");
+    return response.data.data;
+  },
 };

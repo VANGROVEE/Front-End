@@ -14,28 +14,32 @@ export const useAuth = () => {
   const router = useRouter();
   const supabase = createClient();
 
+  const handleAuthSuccess = (response: any) => {
+    if (response.session && response.user) {
+      setAuth(response);
+      toast.success("Selamat datang!");
+      router.refresh();
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
+    }
+  };
+
   const loginMutation = useMutation({
     mutationFn: (values: LoginValue) => authApi.login(values),
-    onSuccess: async (response, values) => {
-      if (response.session && response.user) {
-        setAuth(response);
-
-        toast.success("Selamat datang kembali!");
-
-        router.refresh();
-
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
-      }
+    onSuccess: (response) => handleAuthSuccess(response),
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Login gagal"));
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: (values: RegisterValue) => authApi.register(values),
-    onSuccess: () => {
-      toast.success("Registrasi berhasil");
-      router.push("/auth/login?message=Registrasi berhasil, silakan masuk");
+    onSuccess: (response) => {
+      handleAuthSuccess(response);
+      // toast.success("Registrasi berhasil");
+      // router.push("/auth/login?message=Registrasi berhasil, silakan masuk");
     },
     onError: (error) => {
       toast.error(extractErrorMessage(error, "Registrasi gagal"));
@@ -43,45 +47,63 @@ export const useAuth = () => {
   });
 
   const oauthMutation = useMutation({
-    mutationFn: async () => {
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
+    mutationFn: (idToken: string) => authApi.googleLogin({ idToken: idToken }),
+    onSuccess: (response) => handleAuthSuccess(response),
+    onError: (error) => {
+      toast.error(extractErrorMessage(error, "Gagal masuk dengan Google"));
+    },
+  });
 
-      const { error } = await supabase.auth.signInWithOAuth({
+  /**
+   * Fungsi untuk memicu Popup Google Supabase
+   */
+  const loginWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${origin}/auth/callback?next=/dashboard`,
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
         },
       });
 
       if (error) throw error;
-    },
-  });
+    } catch (error) {
+      toast.error(
+        extractErrorMessage(error, "Terjadi kesalahan saat membuka Google"),
+      );
+    }
+  };
 
   return {
     handleLogin: loginMutation.mutate,
     isLoginLoading: loginMutation.isPending,
-    loginError: loginMutation.error
-      ? extractErrorMessage(loginMutation.error)
-      : null,
-    isLoginSuccess: loginMutation.isSuccess,
 
     handleRegister: registerMutation.mutate,
     isRegisterLoading: registerMutation.isPending,
-    registerError: registerMutation.error
-      ? extractErrorMessage(registerMutation.error)
-      : null,
-    isRegisterSuccess: registerMutation.isSuccess,
 
+    loginWithGoogle,
     handleOauth: oauthMutation.mutate,
     isOauthLoading: oauthMutation.isPending,
-    oauthError: oauthMutation.error
-      ? extractErrorMessage(oauthMutation.error)
-      : null,
 
     isLoading:
       loginMutation.isPending ||
       registerMutation.isPending ||
       oauthMutation.isPending,
+
+    errors: {
+      login: loginMutation.error
+        ? extractErrorMessage(loginMutation.error)
+        : null,
+      register: registerMutation.error
+        ? extractErrorMessage(registerMutation.error)
+        : null,
+      oauth: oauthMutation.error
+        ? extractErrorMessage(oauthMutation.error)
+        : null,
+    },
   };
 };

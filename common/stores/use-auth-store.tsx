@@ -1,3 +1,4 @@
+import { authApi } from "@/modules/auth/api/authApi";
 import Cookies from "js-cookie";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -30,6 +31,7 @@ export interface AuthState {
   expiresAt: number | null;
   setAuth: (payload: BackendAuthPayload | null) => void;
   logout: () => void;
+  refreshMe: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -70,10 +72,31 @@ export const useAuthStore = create<AuthState>()(
           expiresAt: expiryInMs,
         });
       },
+      refreshMe: async () => {
+        try {
+          // Panggil API getMe yang sudah Anda buat
+          const response = await authApi.getMe();
 
+          // result dari BE Anda: { user, token }
+          const { user, token } = response;
+
+          set({
+            user: {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+            },
+            token: token, // Simpan token di memori untuk interceptor Axios
+          });
+        } catch (error) {
+          // Jika 401 (expired), bersihkan store
+          set({ user: null, token: null, expiresAt: null });
+        }
+      },
       logout: () => {
         set({ user: null, token: null, expiresAt: null });
-        Cookies.remove("be_token");
+        Cookies.remove("be_token", { path: "/" });
       },
     }),
     {

@@ -1,8 +1,7 @@
 "use client";
 
-import { Globe, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
-// Import Komponen Shadcn UI resmi
 import { SocialButton } from "@/common/icons/SocialLink";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -20,23 +19,20 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-slate-100 bg-[#FCFDF8] px-6 py-16 md:py-24">
-      {/* Glow Ornamen untuk Vibe Modern */}
       <div className="pointer-events-none absolute -right-24 -top-24 -z-10 h-96 w-96 rounded-full bg-emerald-50 blur-[120px] opacity-70" />
       <div className="pointer-events-none absolute -left-24 bottom-0 -z-10 h-80 w-80 rounded-full bg-green-50 blur-[100px] opacity-50" />
 
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
-          {/* BRANDING SECTION */}
           <div className="col-span-1 space-y-6 md:col-span-4">
             <div className="flex items-center gap-3 select-none">
-              {/* Parent wajib relative dan memegang ukuran w-12 h-12 */}
               <div className="relative w-12 h-12 shrink-0">
                 <Image
                   src="/img/logo.png"
                   alt="Vangrove Logo"
                   fill
-                  sizes="48px" // Optimasi performa Next.js untuk gambar ukuran 12 (48px)
-                  priority // Mengutamakan loading logo agar tidak terkena efek layout shift (CLS)
+                  sizes="48px"
+                  priority
                   className="object-contain"
                 />
               </div>
@@ -53,26 +49,14 @@ export default function Footer() {
               </span>
             </p>
 
-            {/* PERBAIKAN: Menggunakan Shadcn Button untuk Link Sosial Media */}
             <div className="flex gap-3">
               <SocialButton
-                href="https://github.com/vangrove"
+                href="https://github.com/VANGROVEE/"
                 platform="github"
               />
-              <SocialButton
-                href="https://linkedin.com/company/vangrove"
-                platform="linkedin"
-              />
-              <a
-                href="#"
-                className="p-2.5 bg-white border border-slate-200 rounded-xl hover:text-green-600 hover:border-green-200 transition-all flex items-center justify-center shadow-sm"
-              >
-                <Globe size={20} />
-              </a>
             </div>
           </div>
 
-          {/* QUICK LINKS */}
           <div className="col-span-1 space-y-6 md:col-span-2">
             <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
               Ekosistem
@@ -105,7 +89,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* DEVELOPER TEAM GRID */}
           <div className="col-span-1 space-y-6 md:col-span-4">
             <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
               Core Contributors
@@ -129,7 +112,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* CONTACT INFO */}
           <div className="col-span-1 space-y-6 md:col-span-2">
             <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
               Hubungi
@@ -158,7 +140,6 @@ export default function Footer() {
 
         <Separator className="my-12 bg-slate-100" />
 
-        {/* BOTTOM BAR */}
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-3">
             <Badge

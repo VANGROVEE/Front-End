@@ -13,7 +13,6 @@ import {
   ZoomControl,
 } from "react-leaflet";
 
-// --- Custom Icon & Polygon Generator Tetap Sama ---
 const customIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   iconSize: [38, 38],
@@ -45,7 +44,6 @@ function MapFocusHandler({ land }: { land: any | null }) {
 }
 
 export default function MapViewer({ centerPosition, farmLands = [] }: any) {
-  // Memproses data lahan hanya jika farmLands ada isinya
   const renderedLands = useMemo(() => {
     if (!farmLands) return [];
     return farmLands
@@ -70,13 +68,12 @@ export default function MapViewer({ centerPosition, farmLands = [] }: any) {
     );
   }, [centerPosition, farmLands]);
 
-  // Koordinat default (misal tengah Indonesia) jika tidak ada centerPosition
   const defaultCenter: [number, number] = [-2.47, 118.08];
 
   return (
     <MapContainer
       center={centerPosition || defaultCenter}
-      zoom={5} // Zoom lebih jauh jika tidak ada koordinat spesifik
+      zoom={5}
       scrollWheelZoom={true}
       zoomControl={false}
       className="w-full h-full z-0 grayscale-[0.2] contrast-[1.1]"

@@ -1,20 +1,20 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { DynamicForm } from "@/components/molecules/DynamicForm";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { loginFormFields } from "../../const/loginField";
 import { useAuth } from "../../hooks/authHooks";
 import { loginSchema, LoginValue } from "../../schemas/auth.schema";
-import { DynamicForm } from "@/components/molecules/DynamicForm";
-import { loginFormFields } from "../../const/loginField";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 export const LoginForm = () => {
   const {
     handleLogin,
     isLoginLoading,
-    loginError,
-    handleOauth,
+    loginWithGoogle,
+    errors,
     isOauthLoading,
   } = useAuth();
 
@@ -29,9 +29,9 @@ export const LoginForm = () => {
 
   return (
     <div className="space-y-6">
-      {loginError && (
+      {errors.login && (
         <div className="p-4 bg-red-50 text-red-500 rounded-2xl text-xs font-bold border border-red-100 animate-in fade-in zoom-in">
-          {loginError}
+          {errors.login}
         </div>
       )}
 
@@ -69,7 +69,7 @@ export const LoginForm = () => {
       <Button
         type="button"
         variant="outline"
-        onClick={() => handleOauth()}
+        onClick={() => loginWithGoogle()}
         disabled={isLoginLoading || isOauthLoading}
         className="w-full h-14 bg-white border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
       >
