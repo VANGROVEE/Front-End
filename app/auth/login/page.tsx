@@ -2,9 +2,10 @@
 
 import LoginPage from "@/modules/auth/components/pages/LoginPage";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
-const LoginPageWrapper = () => {
+// Pisahkan logic yang menggunakan useSearchParams ke komponen kecil
+const LoginLogic = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");
@@ -15,7 +16,22 @@ const LoginPageWrapper = () => {
     }
   }, [reason, router]);
 
-  return <LoginPage />;
+  return null; // Komponen ini hanya untuk menjalankan logic
+};
+
+const LoginPageWrapper = () => {
+  return (
+    <>
+      {/* Bungkus logic URL dengan Suspense. 
+         Ini akan memperbaiki error "missing-suspense-with-csr-bailout" 
+      */}
+      <Suspense fallback={null}>
+        <LoginLogic />
+      </Suspense>
+
+      <LoginPage />
+    </>
+  );
 };
 
 export default LoginPageWrapper;
