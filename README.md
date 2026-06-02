@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌱 VANGROVE Frontend
 
-## Getting Started
+Frontend aplikasi **VANGROVE (Visual Analytics & Navigation for Geographic Regional Output & Variety Evaluation)**.
 
-First, run the development server:
+VANGROVE merupakan platform pertanian cerdas yang dirancang untuk membantu pengguna dalam memantau kondisi tanaman, menganalisis data pertanian, mendeteksi penyakit tanaman menggunakan Artificial Intelligence (AI), serta memvisualisasikan data geografis melalui antarmuka web yang interaktif.
+
+## ✨ Fitur Utama
+
+* 🔐 Autentikasi dan Otorisasi Pengguna
+* 👤 Manajemen Profil Pengguna
+* 📊 Dashboard Interaktif
+* 🌾 Monitoring Tanaman
+* 📈 Laporan dan Analisis Data
+* 🗺️ Visualisasi Web-GIS
+* 🤖 Integrasi AI Disease Detection
+* 📱 Tampilan Responsif untuk Berbagai Perangkat
+
+## 🛠️ Teknologi yang Digunakan
+
+* React
+* TypeScript
+* Tailwind CSS
+* React Router DOM
+* Axios
+* React Hook Form
+* Zustand / Context API
+* Leaflet (Integrasi GIS)
+
+## 📂 Struktur Proyek
+
+```text
+src/
+├── assets/
+├── components/
+│   ├── atoms/
+│   ├── molecules/
+│   └── organisms/
+├── modules/
+├── routes/
+├── hooks/
+├── services/
+├── utils/
+├── layouts/
+├── pages/
+└── types/
+```
+
+## 🚀 Menjalankan Proyek
+
+### Clone Repository
+
+```bash
+git clone https://github.com/your-username/vangrove-frontend.git
+```
+
+### Masuk ke Direktori Proyek
+
+```bash
+cd vangrove-frontend
+```
+
+### Instalasi Dependensi
+
+```bash
+npm install
+```
+
+### Konfigurasi Environment
+
+Buat file `.env` pada root project:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+### Menjalankan Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikasi akan berjalan pada alamat:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:5173
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Build untuk Produksi
 
-## Learn More
+Membuat build aplikasi untuk kebutuhan deployment:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Melihat hasil build secara lokal:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run preview
+```
 
-## Deploy on Vercel
+## 🧹 Linting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Menjalankan pemeriksaan kualitas kode:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+```
+
+## 🔗 Integrasi Backend
+
+Frontend terhubung dengan backend melalui konfigurasi API yang terdapat pada file environment:
+
+```env
+VITE_API_URL=<url-backend-anda>
+```
+
+Pastikan backend sudah berjalan sebelum menggunakan seluruh fitur aplikasi.
+
+## 📱 Dukungan Perangkat
+
+Antarmuka aplikasi telah dioptimalkan untuk berbagai ukuran layar:
+
+* Desktop
+* Tablet
+* Mobile
+
+## 👨‍💻 Tim Pengembang
+
+Proyek ini dikembangkan oleh Tim Pengembang VANGROVE sebagai solusi digital untuk mendukung monitoring tanaman, deteksi penyakit berbasis AI, analisis data pertanian, dan visualisasi geografis secara terintegrasi.
+
+## 📄 Lisensi
+
+Proyek ini menggunakan lisensi MIT. Silakan gunakan, modifikasi, dan distribusikan sesuai ketentuan lisensi yang berlaku.
