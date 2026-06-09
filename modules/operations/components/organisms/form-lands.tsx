@@ -91,7 +91,7 @@ export const FormFarmerLands = ({
     if (initialData) {
       reset({
         name: initialData.name,
-        total_area: Number(initialData.total_area),
+        total_area: AreaConverter.toHectare(initialData.total_area),
         location: {
           address: initialData.location?.address || "",
           latitude: Number(initialData.location?.latitude),

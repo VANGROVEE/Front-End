@@ -145,6 +145,7 @@ export const FormActivity = ({
 
     const formattedPayload = {
       ...data,
+      activity_date: new Date(data.activity_date),
       cycle_id: cycle.id,
       amount: data.amount ? Number(data.amount) : null,
       total_yield_kg: isHarvestingMode ? Number(data.total_yield_kg || 0) : 0,
@@ -236,7 +237,7 @@ export const FormActivity = ({
                       </PopoverTrigger>
                       <PopoverContent
                         className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
-                        onOpenAutoFocus={(e) => e.preventDefault()} 
+                        onOpenAutoFocus={(e) => e.preventDefault()}
                       >
                         <Command className="w-full">
                           <CommandInput

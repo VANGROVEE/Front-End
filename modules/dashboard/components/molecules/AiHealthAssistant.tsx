@@ -79,7 +79,6 @@ export const AiHealthAssistant = () => {
   return (
     <Card className="bg-white/40 backdrop-blur-2xl p-8 rounded-[40px] shadow-2xl flex flex-col h-full  border border-white/60 relative overflow-hidden transition-all duration-500">
       <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-
       <div className="relative z-10 shrink-0 space-y-6 mb-6">
         <div className="flex justify-between items-start">
           <div className="space-y-1">

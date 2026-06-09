@@ -1,26 +1,26 @@
 "use client";
 
-import React from "react";
-import {
-  MapPin,
-  Calendar,
-  Maximize2,
-  Navigation,
-  Landmark,
-  Settings2,
-  Pencil,
-  Trash2,
-  ChevronDown,
-} from "lucide-react";
+import { AreaConverter } from "@/common/utils/unit";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import {
+  Calendar,
+  ChevronDown,
+  Landmark,
+  MapPin,
+  Maximize2,
+  Navigation,
+  Pencil,
+  Settings2,
+  Trash2,
+} from "lucide-react";
 import { Land } from "../../types/lands";
 
 interface LandInfoCardProps {
@@ -72,7 +72,7 @@ export const LandInfoCard = ({ land, onEdit, onDelete }: LandInfoCardProps) => {
                 <Maximize2 size={12} className="mr-2" /> Luas
               </div>
               <div className="text-xl lg:text-2xl font-black text-slate-800 flex items-baseline gap-1">
-                {Number(land.total_area)}
+                {AreaConverter.toHectare(land.total_area)}
                 <span className="text-xs font-bold text-slate-400">Ha</span>
               </div>
             </div>
